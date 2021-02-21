@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weaccout Example</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="./dist/index.js"></script>
+  <!-- <script src="./js/"></script> -->
+</head>
+
+<body>
+
+  <div class="v-container">
+    <div class="v-card">
+      <div class="v-card-title">
+        <h1 style="text-align: center;">Weaccount Example</h1>
+        <div class="v-error">
+          <p></p>
+        </div>
+      </div>
+      <!-- Test One -->
+      <h3>Generator Methods Test: generate & openWallet </h3>
+      <div class="v-card-body">
+        <div class="v-form-item">
+          <div class="v-form-label"><label for="password">Please Password</label></div>
+          <div class="v-form-control"><input type="text" id="password" name="password" value="abc3&$_"></div>
+          <div class="v-form-btns">
+            <button class="v-btn primary" id="createBtn">Create</button>
+            <button class="v-btn primary" id="openWalletBtn">Open</button>
+          </div>
+        </div>
+        <div class="v-form-item">
+          <div class="v-form-label"><label>Account info</label></div>
+          <div class="v-form-show">
+            <div class="line">
+              <p id="keystoreJson">
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="v-form-item">
+          <div class="v-form-label"><label>open Account info</label></div>
+          <div class="v-form-show">
+            <div class="line">
+              <p id="openKeystoreJson">
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Import wallet -->
+      <h3>Import Test: keyEncrypt & keyDecrypt </h3>
+      <div class="v-card-body" id="importSection">
+        <div class="v-form-item">
+          <div class="v-form-row">
+            <div class="v-col col-6">
+              <textarea name="keystoreJson" id="keystoreJson" rows="10" placeholder="keystore json"></textarea>
+            </div>
+            <div class="v-col">
+              <label for="password1">Password</label>
+              <input type="text" id="password1" name="password1" value="" placeholder="entry password">
+            </div>
+          </div>
+          <div class="v-form-btns import-btns">
+            <button class="v-btn primary" id="importOpenBtn">Import & Open</button>
+          </div>
+        </div>
+
+        <div class="v-form-item">
+          <div class="v-form-label"><label>import decrypted result</label></div>
+          <div class="v-form-show">
+            <div class="line">
+              <p class="importOpenKeyJson"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Key helper Methods Test:  -->
+
+      <!-- test encrypt & decrypr -->
+      <h3>Methods Test: keyEncrypt & keyDecrypt </h3>
+      <div class="v-card-body" id="endeSection">
+        <div class="v-form-item">
+          <div class="v-form-label v-w300">
+            <label for="">Encrypt & Decrypt Use the following defaults params </label>
+          </div>
+          <div class="v-form-btns">
+            <!-- <button class="v-btn primary" id="genKey">genterate key</button>
+                  <button class="v-btn primary" id="encrypt">encrypt</button>
+                  <button class="v-btn primary" id="decrypt">decrypt</button> -->
+            <button class="v-btn primary" id="genEnDeAll">Test all</button>
+          </div>
+        </div>
+        <div class="v-form-row">
+          <div class="v-col col-4">
+            <label>AES key</label>
+            <div class="text-red">
+              <p class="aeskey-arr">AESKey buf</p>
+              <p class="aeskey-hex"></p>
+            </div>
+          </div>
+          <div class="v-col col-4">
+            <label for="">Public key</label>
+            <div class="text-red">
+              <p class="pubkey-arr">pub buf</p>
+              <p class="pubkey-hex"></p>
+            </div>
+          </div>
+          <div class="v-col col-4">
+            <label for="">Secret key</label>
+            <div class="text-red">
+              <p class="prikey-arr">private buf</p>
+              <p class="prikey-hex">private hex</p>
+            </div>
+          </div>
+        </div>
+        <div class="v-form-row">
+          <div class="v-col col-label">Encrypt</div>
+          <div class="v-col col-grow">
+            <span class="v-label">IV Hex</span>
+            <p class="ivhex-text"></p>
+            <span class="v-label">Cipher Base64</span>
+            <p class="encrypted-text"></p>
+            <span class="v-label">Cipher Hex</span>
+            <p class="encrpted-hex" id="encrptedHex"></p>
+            <p class="combox-hex">sum cipher hex</p>
+          </div>
+          <div class="v-col col-label">Decrypt</div>
+          <div class="v-col col-grow">
+            <span class="v-label">before encrypt Plain text:</span>
+            <p class="before-plaintxt-hex"></p>
+            <span class="v-label">decrypt Plain text:</span>
+            <p class="decrypted-hex"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="js/test.js"></script>
+</body>
+
+</html>

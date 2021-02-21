@@ -1,0 +1,137 @@
+html, body {
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.v-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 24px 12px;
+}
+
+.v-card-body {
+  padding: 6px 0px;
+}
+
+.v-container .v-form-item {
+  display: flex;
+  flex: 1 0;
+  flex-direction: row;
+}
+
+.v-form-item .v-form-control {
+  padding: auto;
+  padding: 12px;
+}
+
+.v-form-btns {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding: auto 12px;
+  flex: 1 0;
+}
+
+.v-form-btns .v-btn {
+  cursor: pointer;
+  margin-right: 12px;
+}
+
+.v-form-btns .v-btn:first-child {
+  margin-left: 12px;
+}
+
+.v-form-show {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0;
+  justify-content: left;
+  justify-items: center;
+  padding: 0px 6px;
+  border: 1px solid #ccc;
+}
+
+.v-form-item:not(:last-child) {
+  margin-bottom: 20px;
+}
+
+.v-form-item .v-form-label {
+  flex: 0 1 120px;
+}
+
+.v-form-item .v-form-label.v-w300 {
+  flex: 0 1 auto;
+}
+
+.v-error p {
+  font-size: 1.05rem;
+  text-align: center;
+  color: red;
+  margin-right: 12px;
+}
+
+.v-form-row {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: flex-start;
+  justify-items: center;
+}
+
+.v-form-row .v-col {
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  justify-items: center;
+  flex: 1 1;
+  border: 1px solid #ccc;
+}
+
+.v-form-row .col-label {
+  flex: 0 1 80px;
+}
+
+.v-form-row .col-grow {
+  flex: 1 1 45%;
+}
+
+.text-red {
+  font-size: 10px;
+  color: crimson;
+}
+
+.v-form-row * {
+  word-break: break-all;
+}
+
+p.combox-hex::before {
+  content: 'combox cipher hex >>';
+  color: #00FF00;
+  font-size: .5rem;
+  padding-right: .25rem;
+}
+
+span.v-label {
+  color: #00FF00;
+  font-size: .5rem;
+  padding-right: .25rem;
+}
+
+.v-form-row .col-3 {
+  flex: 1 1 25%;
+}
+
+.v-form-row .col-6 {
+  flex: 1 1 50%;
+}
+
+.v-form-btns.import-btns {
+  flex: 0 1 300px;
+}
+
+p.importOpenKeyJson {
+  color: #00FF00;
+  font-size: .5rem;
+}

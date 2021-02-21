@@ -1,0 +1,6 @@
+.github/
+.idea/
+node_modules/
+dist/
+tsconfig.json
+src/bs58.ts
