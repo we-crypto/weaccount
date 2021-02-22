@@ -43,7 +43,6 @@ import {
   importFromKeystore,
 } from './generator';
 
-
 export const Weaccount = ((): WeaccountType => {
   /**
    * Modal window
@@ -212,7 +211,7 @@ export const Weaccount = ((): WeaccountType => {
     importKeyStore,
     helper: {
       generateKeypair,
-      generateWallet:generate,
+      generateWallet: generate,
       AESKeySync,
       keyEncrypt,
       keyDecrypt,
@@ -234,7 +233,6 @@ export const Weaccount = ((): WeaccountType => {
       paddingLZero,
     },
   };
-
 })();
 
 // window.Weaccount = Weaccount;

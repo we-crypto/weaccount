@@ -3,4 +3,7 @@
 node_modules/
 dist/
 tsconfig.json
-src/bs58.ts
+# src/bs58.ts
+lint-staged.config.js
+commitlint.config.js
+.prettierrc.js

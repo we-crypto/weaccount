@@ -176,9 +176,10 @@ export function keyEncrypt(
 
 /**
  * decrypt from combox buffer
+ *
  * @param {Uint8Array} cipherbuf : [iv+cipher]:hex string
  * @param {Uint8Array} aeskey
- * @return {Object} the decrypt result
+ * @returns {Object} the decrypt result
  */
 export function keyDecrypt(cipherbuf: Uint8Array, aeskey: Uint8Array): any {
   const civObj: CIvHexType = splitBuf2Hex(cipherbuf, 16);

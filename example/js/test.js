@@ -152,7 +152,8 @@
     document.querySelector('#genEnDeAll').addEventListener('click', () => {
       const $pwd = document.querySelector('input[name="password"]');
       if ($pwd && $pwd.value && $pwd.value.toString().trim().length >= 3) {
-        const tools = Weaccount.tools,helper = Weaccount.helper;
+        const tools = Weaccount.tools,
+          helper = Weaccount.helper;
 
         const aeshex =
             '3dfcfca6c22880b1369015b4667a7843be7549ccb9206a56edaacb8fba15c67a',

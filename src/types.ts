@@ -1,4 +1,4 @@
-import { WordArray } from "crypto-js";
+import {WordArray} from 'crypto-js';
 
 export type ConfigType = {
   idPrefix?: string; // Invalid configuration,future extend
@@ -76,17 +76,17 @@ export type UtilsType = {
 };
 
 export type HelperType = {
-  generateKeypair: (auth:string) => KeypairType;
-  generateWallet:(auth:string) =>PWalletType;
+  generateKeypair: (auth: string) => KeypairType;
+  generateWallet: (auth: string) => PWalletType;
   AESKeySync: (pub: Uint8Array, password: string) => Uint8Array;
-  keyEncrypt:(plainbuf: Uint8Array,aeskey: Uint8Array) => WordArray;
-  keyDecrypt:(cipherbuf: Uint8Array, aeskey: Uint8Array) => any;
-  pub2id:(buf: Uint8Array, prefix?: string) => string;
-  id2pub:(bs58Id: string, prefix?: string) => Uint8Array;
-  comboxBuf:(ivbuf: Uint8Array,cipherbuf: Uint8Array) => Uint8Array;
-  comboxHexBuf:(ivhex: string, cipherhex: string)=>Uint8Array;
-  splitBuf:(buf: Uint8Array, pos: number) => CIvType;
-  splitBuf2Hex:(buf: Uint8Array, pos: number) => CIvHexType;
+  keyEncrypt: (plainbuf: Uint8Array, aeskey: Uint8Array) => WordArray;
+  keyDecrypt: (cipherbuf: Uint8Array, aeskey: Uint8Array) => any;
+  pub2id: (buf: Uint8Array, prefix?: string) => string;
+  id2pub: (bs58Id: string, prefix?: string) => Uint8Array;
+  comboxBuf: (ivbuf: Uint8Array, cipherbuf: Uint8Array) => Uint8Array;
+  comboxHexBuf: (ivhex: string, cipherhex: string) => Uint8Array;
+  splitBuf: (buf: Uint8Array, pos: number) => CIvType;
+  splitBuf2Hex: (buf: Uint8Array, pos: number) => CIvHexType;
 };
 
 export type WeaccountType = {

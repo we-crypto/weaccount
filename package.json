@@ -13,10 +13,10 @@
     "prettier": "prettier src/*.{js,ts,html} --ignore-path .prettierignore",
     "lint": "eslint --fix src/*.ts",
     "types": "tsc --noEmit",
-    "build": "yarn build:clean build:lib",
+    "build": "yarn build:clean & yarn build:lib",
     "build:clean": "rimraf ./dist",
-    "build:lib": "rollup --config ci/rollup.lib.js",
-    "build:dev": "rollup --config ci/rollup.dev.js -w",
+    "build:lib": "rollup --config ci/rollup.lib.js --noConflict",
+    "build:dev": "rollup --config ci/rollup.dev.js --noConflict -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -41,6 +41,8 @@
   },
   "homepage": "https://github.com/we-crypto/weaccount#readme",
   "dependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@wecrpto/nacl": "^0.1.0",
     "buffer": "^6.0.3",
     "crypto-js": "3.1.9-1",
@@ -61,10 +63,13 @@
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-jsdoc": "^32.0.2",
     "eslint-plugin-prettier": "^3.3.1",
+    "husky": "^5.1.0",
+    "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-serve": "^1.1.0",
+    "rollup-plugin-sourcemaps": "^0.6.3",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.29.0",
     "typescript": "^4.1.5"

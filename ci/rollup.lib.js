@@ -7,6 +7,7 @@ import {terser} from 'rollup-plugin-terser';
 import pkg from '../package.json';
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
+const libraryname = 'Weaccount';
 
 export default {
   input: 'src/index.ts',
@@ -14,15 +15,18 @@ export default {
     {
       file: pkg.main,
       format: 'umd',
-      name: 'Weaccount',
+      name: libraryname,
     },
     {
       file: pkg.module,
       format: 'es',
-      name: 'Weaccount',
+      name: libraryname,
     },
   ],
+  // external:[''],
   plugins: [
+    resolve(),
+    commonjs(),
     typescript({
       rollupCommonJSResolveHack: true,
       clean: true,
@@ -32,8 +36,6 @@ export default {
       exclude: 'node_modules/**',
       extensions,
     }),
-    resolve(),
-    commonjs(),
     terser(),
   ],
 };

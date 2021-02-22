@@ -4,6 +4,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
+import sourceMaps from 'rollup-plugin-sourcemaps';
 
 import pkg from '../package.json';
 import svrOpts from './serve-dev';
@@ -25,6 +26,8 @@ export default {
     },
   ],
   plugins: [
+    resolve(),
+    commonjs(),
     typescript({
       rollupCommonJSResolveHack: true,
       clean: true,
@@ -34,8 +37,7 @@ export default {
       exclude: 'node_modules/**',
       extensions,
     }),
-    resolve(),
-    commonjs(),
+    sourceMaps(),
     serve(
       Object.assign(svrOpts, {
         contentBase: ['./example'],
