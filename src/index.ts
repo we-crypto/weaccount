@@ -104,13 +104,14 @@ export default (function (): WeaccountType {
      * @param auth {string}
      * @returns modal
      */
-    async generate(auth: string) {
+    generate(auth: string): Modal {
       if (auth === undefined || auth.trim().length < 3) {
         throw new Error('auth must more than 3 characters.');
       }
 
       this.wallet = generate(auth, this.useSigned);
       !!this.remembered && (this.lockedkey = this.wallet.key?.lockedKey);
+      this.wallet.key !== undefined && (this.keypair = this.wallet.key);
 
       return this;
     }

@@ -79,7 +79,7 @@ export type UtilsType = {
 
 export type HelperType = {
   generateKeypair: (auth: string) => KeypairType;
-  generateWallet: (auth: string) => PWalletType;
+  generateWallet: (auth: string, useSigned?: boolean) => PWalletType;
   AESKeySync: (pub: Uint8Array, password: string) => Uint8Array;
   keyEncrypt: (plainbuf: Uint8Array, aeskey: Uint8Array) => WordArray;
   keyDecrypt: (cipherbuf: Uint8Array, aeskey: Uint8Array) => any;
