@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weaccout Sign Example</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="./dist/index.js"></script>
+  <!-- <script src="./js/"></script> -->
+</head>
+
+<body>
+  <div class="v-container">
+    <div class="v-row">
+      <div class="v-col v-title">
+        <h1 style="text-align: center;">Weaccount Sign & verify</h1>
+      </div>
+      <div class="v-col v-right-btns">
+        <a href="index.html" target="_self" class="btn-link">Goback Key Test</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key -->
+  <div class="v-container">
+    <h2>key default</h2>
+    <div class="v-form-item">
+      <div class="v-form-control pwd">
+        <div class="inner"><span class="control-label">password</span></div>
+        <div class="inner">
+          <input type="text" id="password" name="password" value="abc3&$_">
+        </div>
+      </div>
+      <div class="v-form-control v-col-grow">
+        <div class="inner-label">
+          <span class="control-label">pubkey Base64</span>
+        </div>
+        <div class="inner">
+          <input type="text" id="pubkeyBase64" name="pubkeyBase64" value="">
+        </div>
+      </div>
+      <div class="v-form-control v-col-grow">
+        <div class="inner-label">
+          <span class="control-label">prikey Base64</span>
+        </div>
+        <div class="inner">
+          <input type="text" id="prikeyBase64" name="prikeyBase64" value="">
+        </div>
+      </div>
+    </div>
+
+    <div class="v-form-item">
+      <div class="v-form-control v-col-grow">
+        <div class="inner-label">
+          <span class="control-label">Message</span>
+        </div>
+        <div class="inner">
+          <textarea name="message" id="message" rows="10" placeholder="Message"></textarea>
+        </div>
+      </div>
+      <div class="v-form-btns">
+        <button class="v-btn primary" id="signBtn">Sign</button>
+        <button class="v-btn primary" id="verifyBtn">Verify</button>
+        <button class="v-btn primary" id="cleanBtn">Clean All</button>
+      </div>
+    </div>
+
+    <!-- Spilt Error show -->
+    <div class="v-container">
+      <div class="v-error">
+        <p></p>
+      </div>
+    </div>
+
+    <div class="v-form-item">
+      <div class="v-form-control v-col-grow">
+        <div class="inner-label">
+          <span class="control-label">Message Base64</span>
+        </div>
+        <div class="inner content-show">
+          <p class="message-base64-text"></p>
+        </div>
+      </div>
+      <div class="v-form-control v-col-grow">
+        <div class="inner-label">
+          <span class="control-label">Signature</span>
+        </div>
+        <div class="inner content-show">
+          <p class="message-signature-text"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="v-form-item">
+      <div class="v-form-control v-col-grow">
+        <p class="inner-verify-passed">
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- JS -->
+  <script src="js/sign.js"></script>
+</body>
+
+</html>
