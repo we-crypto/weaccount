@@ -1,5 +1,11 @@
 import {Buffer} from 'buffer/';
 
+/**
+ *
+ * @param s
+ *
+ * @returns {Uint8Array} buffer
+ */
 export const decodeUTF8 = (s: string): Uint8Array => {
   if (typeof s !== 'string') throw new TypeError('expected string');
   let i;
@@ -9,6 +15,12 @@ export const decodeUTF8 = (s: string): Uint8Array => {
   return b;
 };
 
+/**
+ *
+ * @param {Uint8Array} arr
+ *
+ * @returns {string}
+ */
 export const encodeUTF8 = (arr: Uint8Array): string => {
   const s = [];
   let i;
@@ -112,4 +124,19 @@ export function validHex(hex: string): boolean {
  */
 export function convertBuf2Uint8buf(buffer: Buffer): Uint8Array {
   return Uint8Array.from(buffer);
+}
+
+/**
+ * checked string base64 encoding
+ *
+ * @param s
+ */
+export function validBase64(s: string): void {
+  if (
+    !/^(?:[A-Za-z0-9+\/]{2}[A-Za-z0-9+\/]{2})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$/.test(
+      s,
+    )
+  ) {
+    throw new TypeError('invalid encoding');
+  }
 }

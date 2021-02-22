@@ -284,3 +284,29 @@ export function comboxHexBuf(ivhex: string, cipherhex: string): Uint8Array {
 
   return buf;
 }
+
+/**
+ * decode utf8 string to Uint8Array URI unsafe
+ *
+ * @param {string} message utf8
+ * @returns {Uint8Array}
+ */
+export function naclDecodeUTF8(message: string): Uint8Array {
+  return hex2buf(enc.Utf8.parse(message).toString());
+}
+
+/**
+ * @param bs64
+ * @returns {Uint8Array}
+ */
+export function bs64ToUint8Array(bs64: string): Uint8Array {
+  return hex2buf(enc.Base64.parse(bs64).toString());
+}
+
+/**
+ * @param {Uint8Array} buf
+ * @returns {string}
+ */
+export function uint8ArrayToBase64(buf: Uint8Array): string {
+  return enc.Base64.stringify(enc.Hex.parse(buf2hex(buf)));
+}

@@ -135,3 +135,80 @@ p.importOpenKeyJson {
   color: #00FF00;
   font-size: .5rem;
 }
+
+.v-row {
+  display: flex;
+  flex-direction: row;
+  flex: 1 0 100%;
+  justify-content: start;
+  justify-items: center;
+}
+
+.v-row .v-col {
+  flex: 1 1 80%;
+  justify-self: self-start;
+}
+
+.v-row .v-right-btns {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content:right;
+  justify-items: center;
+  padding-right: 24px;
+}
+
+.v-right-btns a {
+  flex: 0 0 auto;
+  justify-self: flex-end;
+  text-align: right;
+}
+.v-form-control {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: row;
+}
+.v-form-control div.control-label {
+  flex:0 0 auto;
+}
+
+.v-form-control div.inner {
+  flex:1 1 auto;
+  padding: 0px 4px;
+}
+
+.v-form-control div.inner>input,.v-form-control div.inner>textarea{
+  width: 100%;
+}
+
+
+.v-form-control span.control-label {
+  margin-right: 12px;
+}
+
+.v-form-control.pwd{
+  flex: 0 0 auto;
+}
+
+.v-form-control .v-col-grow {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.v-form-control .v-col-grow * {
+  flex: 1 1 auto;
+}
+
+.inner-verify-passed::before {
+  content: 'Verify result:';
+  padding-right: 12px;
+  color: cornflowerblue;
+}
+
+.content-show {
+  border: 1px solid #ccc;
+  min-height: 18px;
+}
+
+.v-form-btns .v-btn {
+  min-width: 100px;
+}

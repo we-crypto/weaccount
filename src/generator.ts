@@ -9,10 +9,11 @@ import {buf2hex, hex2buf} from './util';
 
 /**
  * @param auth
+ * @param useSigned
  * @returns wallet PWalletType
  */
-export function generate(auth: string): PWalletType {
-  const keypair: KeypairType = generateKeypair(auth);
+export function generate(auth: string, useSigned?: boolean): PWalletType {
+  const keypair: KeypairType = generateKeypair(auth, useSigned);
   const aeskey = keypair.lockedKey;
   const plainbuf = keypair.secretKey;
 

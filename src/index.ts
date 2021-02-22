@@ -12,6 +12,9 @@ import {AESKeySync, generateKeypair, pub2id, id2pub} from './key-helper';
 
 import {DEF_ACC_CONFIG} from './consts';
 
+import {enc} from 'crypto-js';
+import * as nacl from '@wecrpto/nacl';
+
 import {
   validHex,
   buf2hex,
@@ -33,6 +36,9 @@ import {
   splitBuf2Hex,
   comboxBuf,
   comboxHexBuf,
+  naclDecodeUTF8,
+  bs64ToUint8Array,
+  uint8ArrayToBase64,
 } from './crypto-helper';
 
 import {bs58Decode, bs58Encode} from './bs58';
@@ -51,6 +57,7 @@ export default (function (): WeaccountType {
    * Modal window
    */
   class Modal {
+    useSigned: boolean;
     remembered: boolean | undefined;
     idPrefix: string;
     lockedkey: Uint8Array | undefined;
@@ -63,10 +70,16 @@ export default (function (): WeaccountType {
      * @param config
      * @param config.idPrefix
      * @param config.remembered
+     * @param config.useSigned
      */
-    constructor({idPrefix = '', remembered = false}: ConstructorType) {
+    constructor({
+      idPrefix = '',
+      remembered = false,
+      useSigned = false,
+    }: ConstructorType) {
       this.idPrefix = idPrefix;
       this.remembered = remembered;
+      this.useSigned = useSigned;
     }
 
     /**
@@ -74,12 +87,13 @@ export default (function (): WeaccountType {
      * @param {ConfigType} config
      */
     setConfig(config: ConfigType) {
-      const {idPrefix, remembered} = config;
+      const {idPrefix, remembered = false, useSigned = false} = config;
       if (!this.hasWallet()) {
         this.idPrefix = idPrefix || DEF_ACC_CONFIG.idPrefix;
       }
 
       this.remembered = remembered;
+      this.useSigned = useSigned;
     }
 
     /**
@@ -92,7 +106,7 @@ export default (function (): WeaccountType {
         throw new Error('auth must more than 3 characters.');
       }
 
-      this.wallet = generate(auth);
+      this.wallet = generate(auth, this.useSigned);
       !!this.remembered && (this.lockedkey = this.wallet.key?.lockedKey);
 
       return this;
@@ -113,6 +127,18 @@ export default (function (): WeaccountType {
           'Please create a wallet first, uesed Weaccount.create or generate.',
         );
       }
+    }
+
+    /**
+     * locked wallet if wallet not exist will throw error
+     */
+    lock(): void {
+      if (!this.hasWallet()) {
+        throw new Error('unfound wallet.');
+      }
+
+      this.keypair = undefined;
+      this.wallet?.key && (this.wallet.key = undefined);
     }
 
     /**
@@ -226,6 +252,8 @@ export default (function (): WeaccountType {
       splitBuf2Hex,
     },
     tools: {
+      nacl,
+      enc,
       validHex,
       hex2buf,
       buf2hex,
@@ -234,6 +262,9 @@ export default (function (): WeaccountType {
       bs58Encode,
       paddingLeft,
       paddingLZero,
+      naclDecodeUTF8,
+      bs64ToUint8Array,
+      uint8ArrayToBase64,
     },
   };
 })();

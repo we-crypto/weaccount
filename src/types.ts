@@ -3,6 +3,7 @@ import {WordArray} from 'crypto-js';
 export type ConfigType = {
   idPrefix?: string; // Invalid configuration,future extend
   remembered?: boolean;
+  useSigned?: boolean;
 };
 
 export type WalletKeyType = {
@@ -68,6 +69,7 @@ export type ModalType = {
 export type ConstructorType = {
   idPrefix?: string;
   remembered?: boolean;
+  useSigned?: boolean;
 };
 
 export type UtilsType = {

@@ -16,6 +16,7 @@
     const opts = {
       idPrefix: 'Did',
       remembered: true,
+      useSigned: true,
     };
     window.Weaccount.init(opts);
     initLib();
@@ -36,6 +37,8 @@
       // Account.bufUtil && (window.bufUtil = Account.bufUtil);
       helper && (window.helper = helper);
       tools && (window.tools = tools);
+
+      tools && tools.enc && (window.Enc = tools.enc);
       // Account.cryptoJS && (window.cryptoJS = Account.cryptoJS);
     }
   }
