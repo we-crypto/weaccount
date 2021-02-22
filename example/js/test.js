@@ -31,11 +31,12 @@
   function initLib() {
     // console.log(window.Weaccount);
     if (window.Weaccount) {
-      window.Weaccount.bufUtil && (window.bufUtil = window.Weaccount.bufUtil);
-      window.Weaccount.helper && (window.helper = window.Weaccount.helper);
-      window.Weaccount.tools && (window.tools = window.Weaccount.tools);
-      window.Weaccount.cryptoJS &&
-        (window.cryptoJS = window.Weaccount.cryptoJS);
+      const {helper, tools} = window.Weaccount;
+
+      // Account.bufUtil && (window.bufUtil = Account.bufUtil);
+      helper && (window.helper = helper);
+      tools && (window.tools = tools);
+      // Account.cryptoJS && (window.cryptoJS = Account.cryptoJS);
     }
   }
 
@@ -60,7 +61,7 @@
         throw new Error('password must more than 3 letters.');
       }
 
-      const modal = window.Weaccount.create($pwd.value);
+      const modal = Weaccount.create($pwd.value);
       window.$modal = modal;
 
       fillText('keystoreJson', modal.keyStoreJsonfy());
@@ -99,7 +100,7 @@
       const jsonStr = JSON.stringify(
         owallet,
         (k, v) => {
-          return v instanceof Uint8Array ? Weaccount.tools.buf2hex(v) : v;
+          return v instanceof Uint8Array ? tools.buf2hex(v) : v;
         },
         2,
       );
@@ -134,7 +135,7 @@
       const jsonStr = JSON.stringify(
         modal.wallet,
         (k, v) => {
-          return v instanceof Uint8Array ? Weaccount.tools.buf2hex(v) : v;
+          return v instanceof Uint8Array ? tools.buf2hex(v) : v;
         },
         2,
       );

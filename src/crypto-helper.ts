@@ -6,7 +6,7 @@ import {mode, AES, enc, LibWordArray, pad, WordArray} from 'crypto-js';
 import {hex2buf, buf2hex, paddingLeft, paddingLZero, validHex} from './util';
 
 import {bs58Decode, bs58Encode} from './bs58';
-import {DEF_ACC_CONFIG} from 'consts';
+import {DEF_ACC_CONFIG} from './consts';
 import {CIvType, CIvHexType} from './types';
 
 // export const Encrypt = (plaintext: string, key: string): WordArray => {

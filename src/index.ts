@@ -43,7 +43,10 @@ import {
   importFromKeystore,
 } from './generator';
 
-export const Weaccount = ((): WeaccountType => {
+/**
+ *
+ */
+export default (function (): WeaccountType {
   /**
    * Modal window
    */
@@ -235,4 +238,4 @@ export const Weaccount = ((): WeaccountType => {
   };
 })();
 
-// window.Weaccount = Weaccount;
+// export default Account;

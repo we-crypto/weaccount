@@ -3,6 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 import {terser} from 'rollup-plugin-terser';
+import sourceMaps from 'rollup-plugin-sourcemaps';
 
 import pkg from '../package.json';
 
@@ -16,6 +17,7 @@ export default {
       file: pkg.main,
       format: 'umd',
       name: libraryname,
+      sourcemap: true,
     },
     {
       file: pkg.module,
@@ -36,6 +38,7 @@ export default {
       exclude: 'node_modules/**',
       extensions,
     }),
+    sourceMaps(),
     terser(),
   ],
 };

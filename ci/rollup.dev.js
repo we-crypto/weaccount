@@ -18,17 +18,20 @@ export default {
       file: `./example/${pkg.main}`,
       format: 'umd',
       name: 'Weaccount',
+      sourcemap: true,
     },
     {
       file: `./example/${pkg.module}`,
       format: 'es',
       name: 'Weaccount',
+      sourcemap: true,
     },
   ],
   plugins: [
     resolve(),
     commonjs(),
     typescript({
+      useTsconfigDeclarationDir: true,
       rollupCommonJSResolveHack: true,
       clean: true,
     }),

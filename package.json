@@ -16,7 +16,7 @@
     "build": "yarn build:clean & yarn build:lib",
     "build:clean": "rimraf ./dist",
     "build:lib": "rollup --config ci/rollup.lib.js --noConflict",
-    "build:dev": "rollup --config ci/rollup.dev.js --noConflict -w",
+    "build:dev": "rollup --config ci/rollup.dev.js -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -32,7 +32,8 @@
   ],
   "private": false,
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "author": "lanbery <lanbery@gmail.com>",
   "license": "MIT",
