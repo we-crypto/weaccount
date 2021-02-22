@@ -83,12 +83,21 @@ export type HelperType = {
   AESKeySync: (pub: Uint8Array, password: string) => Uint8Array;
   keyEncrypt: (plainbuf: Uint8Array, aeskey: Uint8Array) => WordArray;
   keyDecrypt: (cipherbuf: Uint8Array, aeskey: Uint8Array) => any;
+  signMessage: (message: string, keybuf: Uint8Array) => string;
+  verifyMessage: (
+    signature: string,
+    message: string,
+    pubkey: Uint8Array,
+  ) => boolean;
   pub2id: (buf: Uint8Array, prefix?: string) => string;
   id2pub: (bs58Id: string, prefix?: string) => Uint8Array;
   comboxBuf: (ivbuf: Uint8Array, cipherbuf: Uint8Array) => Uint8Array;
   comboxHexBuf: (ivhex: string, cipherhex: string) => Uint8Array;
   splitBuf: (buf: Uint8Array, pos: number) => CIvType;
   splitBuf2Hex: (buf: Uint8Array, pos: number) => CIvHexType;
+  msgToUint8Array: (message: string) => Uint8Array;
+  bs64ToUint8Array: (bs64: string) => Uint8Array;
+  uint8ArrayToBase64: (buf: Uint8Array) => string;
 };
 
 export type WeaccountType = {

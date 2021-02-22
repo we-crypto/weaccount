@@ -8,14 +8,7 @@ import {hex2buf, buf2hex, paddingLeft, paddingLZero, validHex} from './util';
 import {bs58Decode, bs58Encode} from './bs58';
 import {DEF_ACC_CONFIG} from './consts';
 import {CIvType, CIvHexType} from './types';
-
-// export const Encrypt = (plaintext: string, key: string): WordArray => {
-
-// };
-
-export const convert2Words = (btyes: Uint8Array): LibWordArray => {
-  return enc.Hex.parse(buf2hex(btyes));
-};
+import {sign} from '@wecrpto/nacl';
 
 /**
  *
@@ -39,11 +32,6 @@ export const aesEncrypt = (aeskey: Uint8Array, plainText: Uint8Array): any => {
   });
 
   return encrypted;
-  // return {
-  //   hexPlain,
-  //   encrypted,
-  //   cipherTxt: encrypted.toString(),
-  // };
 };
 
 /**
@@ -100,14 +88,6 @@ export const decryptPriKey = (
   const decrypted = aesDecrypt(aeskey, buf2hex(prikey));
   return decrypted;
 };
-
-/**
- * @param words
- * @returns buffer
- */
-function words2buf(words: LibWordArray): Uint8Array {
-  return hex2buf(enc.Hex.stringify(words));
-}
 
 /**
  * @param plianText hex string
@@ -200,21 +180,46 @@ export function keyDecrypt(cipherbuf: Uint8Array, aeskey: Uint8Array): any {
   return decrypted;
 }
 
-// export function keyDecrypt(
-//   cipher: Uint8Array,
-//   aeskey: Uint8Array,
-// ): WordArray {
-//   const pwords = enc.Hex.parse(buf2hex(plainbuf));
-//   const keywords = enc.Hex.parse(buf2hex(aeskey));
-//   const ivhex = paddingLZero(aeskey, 16);
-//   const encrypted = AES.encrypt(pwords, keywords, {
-//     mode: mode.CFB,
-//     iv: enc.Hex.parse(ivhex),
-//     padding: pad.Pkcs7,
-//   });
+/**
+ * @param {string} message if object stringfy, make sure the order.
+ * @param {Uint8Array} keybuf
+ * @returns {string} base64 signature string
+ */
+export function signMessage(message: string, keybuf: Uint8Array): string {
+  const msgbuf = utf8ToUint8Array(message);
+  // const keybuf = bs64ToUint8Array(keyBase64);
+  if (!keybuf || keybuf.length !== sign.secretKeyLength) {
+    throw new Error('bad size of the private key.');
+  }
 
-//   return encrypted;
-// }
+  const sigbuf = sign.detached(msgbuf, keybuf);
+  return uint8ArrayToBase64(sigbuf);
+}
+
+/**
+ * verified the signature and message with public key
+ *
+ * @param {string} signature
+ * @param {string} message ,if stringfy from object,make sure the order.
+ * @param {Uint8Array} pubkey
+ * @returns {boolean} verified
+ */
+export function verifyMessage(
+  signature: string,
+  message: string,
+  pubkey: Uint8Array,
+): boolean {
+  const msgbuf = utf8ToUint8Array(message);
+  const signbuf = bs64ToUint8Array(signature);
+
+  if (!pubkey || pubkey.length !== sign.publicKeyLength) {
+    throw new Error(
+      `bad public key size,public required ${sign.publicKeyLength}`,
+    );
+  }
+
+  return sign.detached.verify(msgbuf, signbuf, pubkey);
+}
 
 /**
  * @param buf
@@ -286,12 +291,28 @@ export function comboxHexBuf(ivhex: string, cipherhex: string): Uint8Array {
 }
 
 /**
+ * @param {Uint8Array} btyes
+ * @returns {LibWordArray}
+ */
+export function buf2Words(btyes: Uint8Array): LibWordArray {
+  return enc.Hex.parse(buf2hex(btyes));
+}
+
+/**
+ * @param {LibWordArray} words
+ * @returns {Uint8Array} buffer
+ */
+export function words2buf(words: LibWordArray): Uint8Array {
+  return hex2buf(enc.Hex.stringify(words));
+}
+
+/**
  * decode utf8 string to Uint8Array URI unsafe
  *
  * @param {string} message utf8
  * @returns {Uint8Array}
  */
-export function naclDecodeUTF8(message: string): Uint8Array {
+export function utf8ToUint8Array(message: string): Uint8Array {
   return hex2buf(enc.Utf8.parse(message).toString());
 }
 

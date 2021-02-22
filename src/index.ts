@@ -20,7 +20,6 @@ import {
   buf2hex,
   hex2buf,
   str2buf,
-  // decodeUTF8,
   paddingLeft,
   paddingLZero,
 } from './util';
@@ -32,11 +31,15 @@ import {
   keyDecrypt,
   // encryptPriKey,
   // decryptPriKey,
+  signMessage,
+  verifyMessage,
+  buf2Words,
+  words2buf,
   splitBuf,
   splitBuf2Hex,
   comboxBuf,
   comboxHexBuf,
-  naclDecodeUTF8,
+  utf8ToUint8Array,
   bs64ToUint8Array,
   uint8ArrayToBase64,
 } from './crypto-helper';
@@ -193,6 +196,53 @@ export default (function (): WeaccountType {
         throw new Error('wallet unfound,please create first.');
       return JSON.stringify(this.wallet, walletJsonfy, 2);
     }
+
+    /**
+     * sign message with wallet secret key
+     *
+     * @param {string} message if message from object or multiple concat ,make sure the order
+     * @returns {string} signature
+     */
+    sign(message: string): string {
+      if (this.keypair === undefined || !this.keypair.secretKey)
+        throw new Error('miss privateKey.');
+
+      const privateKey = this.keypair.secretKey;
+      if (privateKey.length !== nacl.sign.secretKeyLength) {
+        throw Error(
+          `bad secret key size,required ${nacl.sign.secretKeyLength} `,
+        );
+      }
+
+      const msgbuf = utf8ToUint8Array(message);
+
+      const sign = nacl.sign.detached(msgbuf, privateKey);
+      return uint8ArrayToBase64(sign);
+    }
+
+    /**
+     * verified signature used wallet public key
+     *
+     * @param {string} signature base64 string
+     * @param message string
+     * @returns {boolean} verified
+     */
+    verify(signature: string, message: string): boolean {
+      const signbuf = bs64ToUint8Array(signature);
+      const msgbuf = utf8ToUint8Array(message);
+
+      let pub: Uint8Array | undefined = this.keypair?.publicKey || undefined;
+      if (pub === undefined && this.wallet !== undefined) {
+        const did: string = this.wallet.did;
+        pub = id2pub(did);
+      }
+
+      if (!pub || pub.byteLength !== nacl.sign.publicKeyLength) {
+        throw new Error('miss public key or bad public key size.');
+      }
+
+      return nacl.sign.detached.verify(msgbuf, signbuf, pub);
+    }
   }
 
   let modal: Modal;
@@ -244,16 +294,23 @@ export default (function (): WeaccountType {
       AESKeySync,
       keyEncrypt,
       keyDecrypt,
+      signMessage,
+      verifyMessage,
       pub2id,
       id2pub,
       comboxBuf,
       comboxHexBuf,
       splitBuf,
       splitBuf2Hex,
+      msgToUint8Array: utf8ToUint8Array,
+      bs64ToUint8Array,
+      uint8ArrayToBase64,
     },
     tools: {
       nacl,
       enc,
+      buf2Words,
+      words2buf,
       validHex,
       hex2buf,
       buf2hex,
@@ -262,9 +319,6 @@ export default (function (): WeaccountType {
       bs58Encode,
       paddingLeft,
       paddingLZero,
-      naclDecodeUTF8,
-      bs64ToUint8Array,
-      uint8ArrayToBase64,
     },
   };
 })();
