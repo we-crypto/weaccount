@@ -25,7 +25,7 @@ export default {
       name: libraryname,
     },
   ],
-  // external:[''],
+  external: ['@wecrpto/nacl'],
   plugins: [
     resolve(),
     commonjs(),

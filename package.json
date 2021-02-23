@@ -1,6 +1,6 @@
 {
   "name": "@wecrpto/weaccount",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "a crypto lib for miniprogram",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",

@@ -18,6 +18,12 @@ export type KeystoreType = {
   key: WalletKeyType;
 };
 
+export type SafeWallet = {
+  version: string;
+  did: string; //base58
+  cipher_txt: string;
+};
+
 export type KeypairType = {
   publicKey: Uint8Array;
   secretKey: Uint8Array;
@@ -101,6 +107,7 @@ export type HelperType = {
 };
 
 export type WeaccountType = {
+  version: string;
   init: (config?: ConfigType) => void;
   create: (auth: string, config?: ConfigType) => any;
   importKeyStore: (keystore: string, auth: string, config?: ConfigType) => any;

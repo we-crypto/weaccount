@@ -6,6 +6,7 @@ import {
   ConfigType,
   WeaccountType,
   KeypairType,
+  SafeWallet,
 } from './types';
 
 import {AESKeySync, generateKeypair, pub2id, id2pub} from './key-helper';
@@ -13,7 +14,7 @@ import {AESKeySync, generateKeypair, pub2id, id2pub} from './key-helper';
 import {DEF_ACC_CONFIG} from './consts';
 
 import {enc} from 'crypto-js';
-import * as nacl from '@wecrpto/nacl';
+import {sign as naclSign} from '@wecrpto/nacl';
 
 import {
   validHex,
@@ -90,7 +91,7 @@ export default (function (): WeaccountType {
      * @param {ConfigType} config
      */
     setConfig(config: ConfigType) {
-      const {idPrefix, remembered = false, useSigned = false} = config;
+      const {idPrefix, remembered = true, useSigned = true} = config;
       if (!this.hasWallet()) {
         this.idPrefix = idPrefix || DEF_ACC_CONFIG.idPrefix;
       }
@@ -109,11 +110,24 @@ export default (function (): WeaccountType {
         throw new Error('auth must more than 3 characters.');
       }
 
+      if (this.hasWallet())
+        throw new Error(
+          'wallet exists.if your need a new,please use reset first',
+        );
       this.wallet = generate(auth, this.useSigned);
       !!this.remembered && (this.lockedkey = this.wallet.key?.lockedKey);
       this.wallet.key !== undefined && (this.keypair = this.wallet.key);
 
       return this;
+    }
+
+    /**
+     * reset wallet
+     */
+    reset(): void {
+      this.wallet = undefined;
+      this.keypair = undefined;
+      this.keystore = undefined;
     }
 
     /**
@@ -159,6 +173,22 @@ export default (function (): WeaccountType {
     }
 
     /**
+     * get the wallet object no keypair
+     *
+     * @returns SafeWallet or undefined
+     */
+    getSafeWallet(): SafeWallet | undefined {
+      if (this.wallet !== undefined) {
+        return {
+          version: this.wallet?.version,
+          did: this.wallet?.did,
+          cipher_txt: this.wallet?.cipher_txt,
+        };
+      }
+      return undefined;
+    }
+
+    /**
      * assert wallet has created
      *
      * @returns boolean
@@ -182,7 +212,7 @@ export default (function (): WeaccountType {
      */
     getKeypair(): KeypairType | undefined {
       if (!this.hasWallet())
-        throw new Error('wallet unfound,please create first.');
+        throw new Error('wallet unfound,please generate first.');
       if (!this.hasOpened())
         throw new Error('wallet locked,please open first.');
 
@@ -194,56 +224,62 @@ export default (function (): WeaccountType {
      */
     keyStoreJsonfy() {
       if (!this.hasWallet())
-        throw new Error('wallet unfound,please create first.');
+        throw new Error('wallet unfound,please generate first.');
       return JSON.stringify(this.wallet, walletJsonfy, 2);
     }
 
     /**
-     * sign message with wallet secret key
      *
-     * @param {string} message if message from object or multiple concat ,make sure the order
-     * @returns {string} signature
+     * @param json
+     * @param auth
+     * @returns {PWalletType}
      */
-    sign(message: string): string {
-      if (this.keypair === undefined || !this.keypair.secretKey)
-        throw new Error('miss privateKey.');
-
-      const privateKey = this.keypair.secretKey;
-      if (privateKey.length !== nacl.sign.secretKeyLength) {
-        throw Error(
-          `bad secret key size,required ${nacl.sign.secretKeyLength} `,
-        );
-      }
-
-      const msgbuf = utf8ToUint8Array(message);
-
-      const sign = nacl.sign.detached(msgbuf, privateKey);
-      return uint8ArrayToBase64(sign);
+    parseJson(json: string, auth: string): PWalletType {
+      const wallet: PWalletType = importFromKeystore(
+        json,
+        auth,
+        this.remembered,
+      );
+      this.setWallet(wallet);
+      return wallet;
     }
 
-    /**
-     * verified signature used wallet public key
-     *
-     * @param {string} signature base64 string
-     * @param message string
-     * @returns {boolean} verified
-     */
-    verify(signature: string, message: string): boolean {
-      const signbuf = bs64ToUint8Array(signature);
-      const msgbuf = utf8ToUint8Array(message);
+    // /**
+    //  * sign message with wallet secret key
+    //  *
+    //  * @param {string} message if message from object or multiple concat ,make sure the order
+    //  * @returns {string} signature
+    //  */
+    // sign(message: string): string {
+    //   if (this.keypair === undefined || !this.keypair.secretKey)
+    //     throw new Error('miss privateKey.');
+    //   throw new Error('this method invalid,please used helper.signMessage.');
+    //   return message;
+    // }
 
-      let pub: Uint8Array | undefined = this.keypair?.publicKey || undefined;
-      if (pub === undefined && this.wallet !== undefined) {
-        const did: string = this.wallet.did;
-        pub = id2pub(did);
-      }
+    // /**
+    //  * verified signature used wallet public key
+    //  *
+    //  * @param {string} signature base64 string
+    //  * @param message string
+    //  */
+    // verify(signature: string, message: string): void {
+    //   const signbuf = bs64ToUint8Array(signature);
+    //   const msgbuf = utf8ToUint8Array(message);
 
-      if (!pub || pub.byteLength !== nacl.sign.publicKeyLength) {
-        throw new Error('miss public key or bad public key size.');
-      }
+    //   let pub: Uint8Array | undefined = this.keypair?.publicKey || undefined;
+    //   if (pub === undefined && this.wallet !== undefined) {
+    //     const did: string = this.wallet.did;
+    //     pub = id2pub(did);
+    //   }
 
-      return nacl.sign.detached.verify(msgbuf, signbuf, pub);
-    }
+    //   if (!pub || pub.byteLength !== naclSign.publicKeyLength) {
+    //     throw new Error('miss public key or bad public key size.');
+    //   }
+
+    //   throw new Error('this method invalid,please used helper.verifyMessage.');
+    //   // return naclSign.detached.verify(msgbuf, signbuf, pub);
+    // }
   }
 
   let modal: Modal;
@@ -277,7 +313,6 @@ export default (function (): WeaccountType {
   ): Modal => {
     const modal = new Modal({...config});
     const remembered = modal.remembered;
-    console.log('auth>>', auth);
     const wallet: PWalletType = importFromKeystore(json, auth, remembered);
 
     modal.setWallet(wallet);
@@ -286,6 +321,7 @@ export default (function (): WeaccountType {
   };
 
   return {
+    version: '0.1.6',
     init,
     create,
     importKeyStore,
@@ -308,7 +344,6 @@ export default (function (): WeaccountType {
       uint8ArrayToBase64,
     },
     tools: {
-      nacl,
       enc,
       buf2Words,
       words2buf,

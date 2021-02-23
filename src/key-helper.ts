@@ -1,7 +1,7 @@
 import {Buffer} from 'buffer/';
 import {scrypt, ProgressCallback, syncScrypt} from 'scrypt-js';
 
-import {box, sign} from '@wecrpto/nacl';
+import * as nacl from '@wecrpto/nacl';
 
 import {KP} from './consts';
 import {KeypairType} from './types';
@@ -61,7 +61,7 @@ export const generateKeypair = (
   useSigned?: boolean,
 ): KeypairType => {
   if (!auth) auth = '';
-  const kp = useSigned ? sign.keyPair() : box.keyPair();
+  const kp = useSigned ? nacl.sign.keyPair() : nacl.box.keyPair();
   return {
     publicKey: kp.publicKey,
     secretKey: kp.secretKey,

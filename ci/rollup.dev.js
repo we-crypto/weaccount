@@ -27,6 +27,7 @@ export default {
       sourcemap: true,
     },
   ],
+  external: ['@wecrpto/nacl'],
   plugins: [
     resolve(),
     commonjs(),
