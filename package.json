@@ -1,6 +1,6 @@
 {
   "name": "@wecrpto/weaccount",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "a crypto lib for miniprogram",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",
@@ -43,6 +43,7 @@
   "homepage": "https://github.com/we-crypto/weaccount#readme",
   "dependencies": {
     "@wecrpto/nacl": "^0.1.0",
+    "@wecrpto/nacl-util": "^0.1.1",
     "buffer": "^6.0.3",
     "crypto-js": "3.1.9-1",
     "js-base64": "^3.6.0",

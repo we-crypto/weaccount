@@ -170,12 +170,16 @@ export default (function (): WeaccountType {
      * @param auth
      * @returns {string} aeskeyHex
      */
-    getAesHex(auth: string): string {
-      checkAuth(auth);
+    getAesHex(auth?: string): string {
+      if (auth === undefined && this.wallet && this.wallet.key) {
+        return buf2hex(this.wallet.key.lockedKey);
+      } else {
+        checkAuth(auth || '');
+      }
 
       if (this.wallet) {
         let aeshex = '';
-        const wallet: PWalletType = openWallet(this.wallet, auth);
+        const wallet: PWalletType = openWallet(this.wallet, auth || '');
         const lockedKey = wallet.key?.lockedKey;
         lockedKey && (aeshex = buf2hex(lockedKey));
         return aeshex;

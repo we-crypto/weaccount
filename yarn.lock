@@ -1168,6 +1168,11 @@
     "@typescript-eslint/types" "4.15.1"
     eslint-visitor-keys "^2.0.0"
 
+"@wecrpto/nacl-util@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npm.taobao.org/@wecrpto/nacl-util/download/@wecrpto/nacl-util-0.1.1.tgz#3e248201a400ab48dbb283a142c57080aa5602d4"
+  integrity sha1-PiSCAaQAq0jbsoOhQsVwgKpWAtQ=
+
 "@wecrpto/nacl@^0.1.0":
   version "0.1.0"
   resolved "https://registry.npm.taobao.org/@wecrpto/nacl/download/@wecrpto/nacl-0.1.0.tgz#f73b46410b77f0f195e597cc3d0259df917caddc"
