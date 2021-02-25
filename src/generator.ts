@@ -112,6 +112,39 @@ export function openWallet(wallet: PWalletType, auth: string): PWalletType {
 }
 
 /**
+ * open wallet by keystore and aeshex
+ *
+ * @param wallet
+ * @param aeskey
+ * @returns {PWalletType} an wallet contains keypair
+ */
+export function openWalletByAeskey(
+  wallet: PWalletType,
+  aeskey: Uint8Array,
+): PWalletType {
+  const did = wallet.did;
+  const pubkey = id2pub(did, DEF_ACC_CONFIG.idPrefix);
+  const cipherBs58 = wallet.cipher_txt;
+
+  if (!cipherBs58 || !cipherBs58.trim().length) {
+    throw new Error(`cipher_txt non-string. ${cipherBs58}.`);
+  }
+
+  const cipherSumBuf = bs58Decode(cipherBs58);
+  const decrypted = keyDecrypt(cipherSumBuf, aeskey);
+  validHexForDecrypted(decrypted.toString());
+  const keypair: KeypairType = {
+    publicKey: pubkey,
+    secretKey: hex2buf(decrypted.toString()),
+    lockedKey: aeskey,
+  };
+
+  wallet.key = keypair;
+
+  return wallet;
+}
+
+/**
  * @param keystore json string
  * @param auth
  * @param remembered boolean default false ,if true wallet will has key
@@ -164,6 +197,20 @@ export function importFromKeystore(
   }
 
   return wallet;
+}
+
+/**
+ * @param plainhex
+ * @param auth
+ */
+function validHexForDecrypted(plainhex: string, auth?: string) {
+  if (!plainhex || !plainhex.length) {
+    throw new Error(
+      auth
+        ? `open wallet fail. make sure your password incorrect. password [ ${auth} ]`
+        : 'open wallet fail. make sure your password incorrect',
+    );
+  }
 }
 
 /**

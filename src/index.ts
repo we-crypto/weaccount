@@ -14,7 +14,6 @@ import {AESKeySync, generateKeypair, pub2id, id2pub} from './key-helper';
 import {DEF_ACC_CONFIG} from './consts';
 
 import {enc} from 'crypto-js';
-import {sign as naclSign} from '@wecrpto/nacl';
 
 import {
   validHex,
@@ -50,6 +49,7 @@ import {
   generate,
   walletJsonfy,
   openWallet,
+  openWalletByAeskey,
   importFromKeystore,
 } from './generator';
 
@@ -148,6 +148,43 @@ export default (function (): WeaccountType {
     }
 
     /**
+     *
+     * @param aeshex
+     */
+
+    // eslint-disable-next-line require-jsdoc
+    openByAeskey(aeshex: string): PWalletType {
+      const aeskey = hex2buf(aeshex);
+
+      if (this.wallet !== undefined) {
+        const wallet: PWalletType = openWalletByAeskey(this.wallet, aeskey);
+
+        return wallet;
+      } else {
+        throw UnfoundWalletError();
+      }
+    }
+
+    /**
+     *
+     * @param auth
+     * @returns {string} aeskeyHex
+     */
+    getAesHex(auth: string): string {
+      checkAuth(auth);
+
+      if (this.wallet) {
+        let aeshex = '';
+        const wallet: PWalletType = openWallet(this.wallet, auth);
+        const lockedKey = wallet.key?.lockedKey;
+        lockedKey && (aeshex = buf2hex(lockedKey));
+        return aeshex;
+      } else {
+        throw UnfoundWalletError();
+      }
+    }
+
+    /**
      * locked wallet if wallet not exist will throw error
      */
     lock(): void {
@@ -170,6 +207,20 @@ export default (function (): WeaccountType {
       } else {
         this.keypair = undefined;
       }
+    }
+
+    /**
+     * load SafeWallet in
+     *
+     * @param safeWallet load
+     */
+    loadSafeWallet(safeWallet: SafeWallet): void {
+      if (this.hasWallet()) return;
+      this.wallet = {
+        version: safeWallet.version,
+        did: safeWallet.did,
+        cipher_txt: safeWallet.cipher_txt,
+      };
     }
 
     /**
@@ -282,6 +333,23 @@ export default (function (): WeaccountType {
     // }
   }
 
+  /**
+   * @returns Error
+   */
+  function UnfoundWalletError(): Error {
+    return new Error('Not found wallet,you can use generate create.');
+  }
+
+  /**
+   * check auth
+   *
+   * @param auth
+   */
+  function checkAuth(auth: string): void {
+    if (auth === undefined || !auth.length)
+      throw new Error(`Parameter auth required. [auth:${auth || 'undefined'}]`);
+  }
+
   let modal: Modal;
 
   const init = (config?: ConfigType) => {
@@ -331,6 +399,7 @@ export default (function (): WeaccountType {
       AESKeySync,
       keyEncrypt,
       keyDecrypt,
+      openWalletByAeskey,
       signMessage,
       verifyMessage,
       pub2id,

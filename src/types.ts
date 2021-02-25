@@ -89,6 +89,7 @@ export type HelperType = {
   AESKeySync: (pub: Uint8Array, password: string) => Uint8Array;
   keyEncrypt: (plainbuf: Uint8Array, aeskey: Uint8Array) => WordArray;
   keyDecrypt: (cipherbuf: Uint8Array, aeskey: Uint8Array) => any;
+  openWalletByAeskey: (wallet: PWalletType, aeskey: Uint8Array) => PWalletType;
   signMessage: (message: string, keybuf: Uint8Array) => string;
   verifyMessage: (
     signature: string,
