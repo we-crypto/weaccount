@@ -61,7 +61,7 @@ export const generateKeypair = (
   useSigned?: boolean,
 ): KeypairType => {
   if (!auth) auth = '';
-  const kp = useSigned ? nacl.sign.keyPair() : nacl.box.keyPair();
+  const kp = useSigned ? nacl.sign.keyPair() : nacl.sign.keyPair();
   return {
     publicKey: kp.publicKey,
     secretKey: kp.secretKey,

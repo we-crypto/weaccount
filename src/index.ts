@@ -53,6 +53,7 @@ import {
   importFromKeystore,
 } from './generator';
 
+const libVer = '0.1.102';
 /**
  *
  */
@@ -139,6 +140,9 @@ export default (function (): WeaccountType {
       if (this.wallet !== undefined) {
         const owallet: PWalletType = openWallet(this.wallet, auth);
         this.wallet = owallet;
+        if (owallet.key) {
+          this.keypair = owallet.key;
+        }
         return owallet;
       } else {
         throw new Error(
@@ -158,7 +162,9 @@ export default (function (): WeaccountType {
 
       if (this.wallet !== undefined) {
         const wallet: PWalletType = openWalletByAeskey(this.wallet, aeskey);
-
+        if (wallet.key) {
+          this.keypair = wallet.key;
+        }
         return wallet;
       } else {
         throw UnfoundWalletError();
@@ -393,7 +399,7 @@ export default (function (): WeaccountType {
   };
 
   return {
-    version: '0.1.6',
+    version: libVer,
     init,
     create,
     importKeyStore,

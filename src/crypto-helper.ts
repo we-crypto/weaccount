@@ -162,6 +162,7 @@ export function keyEncrypt(
  * @returns {Object} the decrypt result
  */
 export function keyDecrypt(cipherbuf: Uint8Array, aeskey: Uint8Array): any {
+  // console.log('keyDecrypt>>>>>', cipherbuf);
   const civObj: CIvHexType = splitBuf2Hex(cipherbuf, 16);
 
   const keywords = enc.Hex.parse(buf2hex(aeskey));
