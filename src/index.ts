@@ -53,7 +53,7 @@ import {
   importFromKeystore,
 } from './generator';
 
-const libVer = '0.1.102';
+const libVer = '0.2.0';
 /**
  *
  */
