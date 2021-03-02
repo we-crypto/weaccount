@@ -12,7 +12,7 @@ import {
   lib,
 } from 'crypto-js';
 
-import {hex2buf, buf2hex, paddingLeft, paddingLZero, validHex} from './util';
+import {hex2buf, buf2hex, paddingLeft, validHex} from './util';
 
 import {CIvType, CIvHexType} from './types';
 import {sign} from '@wecrpto/nacl';
@@ -30,8 +30,6 @@ export const Encrypt = (
 ): WordArray => {
   const keyhex = Buffer.from(aeskey).toString('hex');
   const keywords = enc.Hex.parse(keyhex);
-
-  // console.log('ivwords>>>>>>>>>>', keywords.words.slice(0, 4));
 
   const encrypted = AES.encrypt(plainWords, keywords, {
     iv: keywords.words.slice(0, 4),
@@ -142,7 +140,6 @@ export function keyEncrypt(
 export function keyDecrypt(cipherbuf: Uint8Array, aeskey: Uint8Array): any {
   const cipherwords = lib.WordArray.create(cipherbuf.slice(IV_BYTELEN));
   const cipherbase64 = enc.Base64.stringify(cipherwords);
-  // const civObj: CIvHexType = splitBuf2Hex(cipherbuf, IV_BYTELEN); //16
 
   const keywords = enc.Hex.parse(buf2hex(aeskey));
 
@@ -154,7 +151,6 @@ export function keyDecrypt(cipherbuf: Uint8Array, aeskey: Uint8Array): any {
     padding: pad.ZeroPadding,
   });
 
-  console.log(decrypted.toString(enc.Hex));
   return decrypted;
 }
 
