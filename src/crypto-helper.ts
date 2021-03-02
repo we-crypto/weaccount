@@ -1,34 +1,42 @@
 /* eslint-disable no-console */
 import {Buffer} from 'buffer/';
-import {AESKeySync, id2pub} from './key-helper';
-import {mode, AES, enc, LibWordArray, pad, WordArray} from 'crypto-js';
+
+import {
+  mode,
+  AES,
+  enc,
+  LibWordArray,
+  pad,
+  WordArray,
+  DecryptedMessage,
+  lib,
+} from 'crypto-js';
 
 import {hex2buf, buf2hex, paddingLeft, paddingLZero, validHex} from './util';
 
-import {bs58Decode, bs58Encode} from './bs58';
-import {DEF_ACC_CONFIG} from './consts';
 import {CIvType, CIvHexType} from './types';
 import {sign} from '@wecrpto/nacl';
+const IV_BYTELEN = 16;
 
 /**
  *
  * @param aeskey
- * @param plainText
- * @returns any
+ * @param plainWords
+ * @returns WordArray
  */
-export const aesEncrypt = (aeskey: Uint8Array, plainText: Uint8Array): any => {
-  // aeskey [uint8array]->[hex string]
-  const hexkey = Buffer.from(aeskey).toString('hex');
-  const hexIv = paddingLeft(hexkey, 16);
-  const kwords = enc.Hex.parse(hexkey);
+export const Encrypt = (
+  aeskey: Uint8Array,
+  plainWords: LibWordArray,
+): WordArray => {
+  const keyhex = Buffer.from(aeskey).toString('hex');
+  const keywords = enc.Hex.parse(keyhex);
 
-  const hexPlain = buf2hex(plainText);
-  const pwords = enc.Hex.parse(hexPlain);
+  // console.log('ivwords>>>>>>>>>>', keywords.words.slice(0, 4));
 
-  const encrypted = AES.encrypt(pwords, kwords, {
-    iv: enc.Hex.parse(hexIv),
+  const encrypted = AES.encrypt(plainWords, keywords, {
+    iv: keywords.words.slice(0, 4),
     mode: mode.CFB,
-    padding: pad.Pkcs7,
+    padding: pad.AnsiX923,
   });
 
   return encrypted;
@@ -40,7 +48,10 @@ export const aesEncrypt = (aeskey: Uint8Array, plainText: Uint8Array): any => {
  * @param cipherText
  * @returns CryptoJS.DecryptedMessage
  */
-export const aesDecrypt = (aeskey: Uint8Array, cipherText: string): any => {
+export const Decrypt = (
+  aeskey: Uint8Array,
+  cipherText: string,
+): DecryptedMessage => {
   const hexkey = buf2hex(aeskey);
   const hexIv = paddingLeft(hexkey, 16);
   const kwords = enc.Hex.parse(hexkey);
@@ -51,41 +62,6 @@ export const aesDecrypt = (aeskey: Uint8Array, cipherText: string): any => {
     padding: pad.Pkcs7,
   });
 
-  return decrypted;
-  // return {
-  //   decrypted,
-  //   plainText: enc.Hex.stringify(decrypted),
-  // };
-};
-
-export const encryptPriKey = (
-  prikey: Uint8Array,
-  pubkey: Uint8Array,
-  auth: string,
-): any => {
-  const aeskey = AESKeySync(pubkey, auth);
-
-  const encrypted = aesEncrypt(aeskey, prikey);
-  const cipherBuf = words2buf(encrypted);
-  const cipherTxt = bs58Encode(cipherBuf);
-
-  return {
-    encrypted,
-    cipherTxt,
-  };
-};
-
-export const decryptPriKey = (
-  did: string,
-  cipherTxt: string,
-  auth: string,
-): any => {
-  const pubkey = id2pub(did, DEF_ACC_CONFIG.idPrefix);
-
-  const aeskey = AESKeySync(pubkey, auth);
-  const prikey = bs58Decode(cipherTxt);
-
-  const decrypted = aesDecrypt(aeskey, buf2hex(prikey));
   return decrypted;
 };
 
@@ -140,13 +116,15 @@ export function keyEncrypt(
   plainbuf: Uint8Array,
   aeskey: Uint8Array,
 ): WordArray {
-  const pwords = enc.Hex.parse(buf2hex(plainbuf));
+  const pwords = lib.WordArray.create(plainbuf);
+  const ivwords = lib.WordArray.random(IV_BYTELEN); //IV_BYTELEN 16
+
   const keywords = enc.Hex.parse(buf2hex(aeskey));
-  const ivhex = paddingLZero(aeskey, 16);
+
   const encrypted = AES.encrypt(pwords, keywords, {
     mode: mode.CFB,
-    iv: enc.Hex.parse(ivhex),
-    padding: pad.Pkcs7,
+    iv: ivwords,
+    padding: pad.ZeroPadding,
   });
 
   return encrypted;
@@ -162,22 +140,21 @@ export function keyEncrypt(
  * @returns {Object} the decrypt result
  */
 export function keyDecrypt(cipherbuf: Uint8Array, aeskey: Uint8Array): any {
-  // console.log('keyDecrypt>>>>>', cipherbuf);
-  const civObj: CIvHexType = splitBuf2Hex(cipherbuf, 16);
+  const cipherwords = lib.WordArray.create(cipherbuf.slice(IV_BYTELEN));
+  const cipherbase64 = enc.Base64.stringify(cipherwords);
+  // const civObj: CIvHexType = splitBuf2Hex(cipherbuf, IV_BYTELEN); //16
 
   const keywords = enc.Hex.parse(buf2hex(aeskey));
 
-  const cipherhex = civObj.cipherhex;
-  const cipher = enc.Base64.stringify(enc.Hex.parse(cipherhex));
+  const ivwords = lib.WordArray.create(cipherbuf.slice(0, IV_BYTELEN));
 
-  const ivwords = enc.Hex.parse(civObj.ivhex);
-
-  const decrypted = AES.decrypt(cipher, keywords, {
+  const decrypted = AES.decrypt(cipherbase64, keywords, {
     mode: mode.CFB,
-    iv: ivwords,
-    padding: pad.Pkcs7,
+    iv: enc.Hex.parse(ivwords.toString()),
+    padding: pad.ZeroPadding,
   });
 
+  console.log(decrypted.toString(enc.Hex));
   return decrypted;
 }
 

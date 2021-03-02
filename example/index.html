@@ -125,6 +125,7 @@
           <div class="v-col col-4">
             <label for="">Secret key</label>
             <div class="text-red">
+
               <p class="prikey-arr">private buf</p>
               <p class="prikey-hex">private hex</p>
             </div>
@@ -133,6 +134,8 @@
         <div class="v-form-row">
           <div class="v-col col-label">Encrypt</div>
           <div class="v-col col-grow">
+            <span class="v-label">Key Hex</span>
+            <p class="aeskeyhex-text"></p>
             <span class="v-label">IV Hex</span>
             <p class="ivhex-text"></p>
             <span class="v-label">Cipher Base64</span>
@@ -144,8 +147,10 @@
           <div class="v-col col-label">Decrypt</div>
           <div class="v-col col-grow">
             <span class="v-label">before encrypt Plain text:</span>
+
             <p class="before-plaintxt-hex"></p>
             <span class="v-label">decrypt Plain text:</span>
+            <p class="prikey-decrypted-len" style="color:red;"></p>
             <p class="decrypted-hex"></p>
           </div>
         </div>

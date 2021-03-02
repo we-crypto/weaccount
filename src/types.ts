@@ -1,4 +1,4 @@
-import {WordArray} from 'crypto-js';
+import {LibWordArray, WordArray} from 'crypto-js';
 
 export type ConfigType = {
   idPrefix?: string; // Invalid configuration,future extend
@@ -19,7 +19,7 @@ export type KeystoreType = {
 };
 
 export type SafeWallet = {
-  version: string;
+  version: string | number;
   did: string; //base58
   cipher_txt: string;
 };
@@ -31,7 +31,7 @@ export type KeypairType = {
 };
 
 export type PWalletType = {
-  version: string;
+  version: string | number;
   did: string; //base58
   cipher_txt: string;
   key?: KeypairType | undefined;
@@ -112,6 +112,7 @@ export type WeaccountType = {
   init: (config?: ConfigType) => void;
   create: (auth: string, config?: ConfigType) => any;
   importKeyStore: (keystore: string, auth: string, config?: ConfigType) => any;
+  Encrypt: (aeskey: Uint8Array, plainWords: LibWordArray) => WordArray;
   helper: HelperType;
   tools: any;
 };

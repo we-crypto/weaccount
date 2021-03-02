@@ -14,6 +14,8 @@ import {AESKeySync, generateKeypair, pub2id, id2pub} from './key-helper';
 import {DEF_ACC_CONFIG} from './consts';
 
 import {enc} from 'crypto-js';
+import {Buffer} from 'buffer/';
+import * as CryptoJS from 'crypto-js';
 
 import {
   validHex,
@@ -25,12 +27,10 @@ import {
 } from './util';
 
 import {
-  // aesEncrypt,
+  Encrypt,
   // aesDecrypt,
   keyEncrypt,
   keyDecrypt,
-  // encryptPriKey,
-  // decryptPriKey,
   signMessage,
   verifyMessage,
   buf2Words,
@@ -304,43 +304,6 @@ export default (function (): WeaccountType {
       this.setWallet(wallet);
       return wallet;
     }
-
-    // /**
-    //  * sign message with wallet secret key
-    //  *
-    //  * @param {string} message if message from object or multiple concat ,make sure the order
-    //  * @returns {string} signature
-    //  */
-    // sign(message: string): string {
-    //   if (this.keypair === undefined || !this.keypair.secretKey)
-    //     throw new Error('miss privateKey.');
-    //   throw new Error('this method invalid,please used helper.signMessage.');
-    //   return message;
-    // }
-
-    // /**
-    //  * verified signature used wallet public key
-    //  *
-    //  * @param {string} signature base64 string
-    //  * @param message string
-    //  */
-    // verify(signature: string, message: string): void {
-    //   const signbuf = bs64ToUint8Array(signature);
-    //   const msgbuf = utf8ToUint8Array(message);
-
-    //   let pub: Uint8Array | undefined = this.keypair?.publicKey || undefined;
-    //   if (pub === undefined && this.wallet !== undefined) {
-    //     const did: string = this.wallet.did;
-    //     pub = id2pub(did);
-    //   }
-
-    //   if (!pub || pub.byteLength !== naclSign.publicKeyLength) {
-    //     throw new Error('miss public key or bad public key size.');
-    //   }
-
-    //   throw new Error('this method invalid,please used helper.verifyMessage.');
-    //   // return naclSign.detached.verify(msgbuf, signbuf, pub);
-    // }
   }
 
   /**
@@ -381,7 +344,7 @@ export default (function (): WeaccountType {
    *
    * @param json
    * @param auth
-   * @param config [idPrefix,remembered] optinal
+   * @param config [idPrefix,remembered,useSigned] optinal
    * @returns wallet instance
    */
   const importKeyStore = (
@@ -389,6 +352,7 @@ export default (function (): WeaccountType {
     auth: string,
     config?: ConfigType,
   ): Modal => {
+    config && (config.remembered = true) && (config.useSigned = true);
     const modal = new Modal({...config});
     const remembered = modal.remembered;
     const wallet: PWalletType = importFromKeystore(json, auth, remembered);
@@ -400,6 +364,7 @@ export default (function (): WeaccountType {
 
   return {
     version: libVer,
+    Encrypt,
     init,
     create,
     importKeyStore,
@@ -423,6 +388,8 @@ export default (function (): WeaccountType {
       uint8ArrayToBase64,
     },
     tools: {
+      CryptoJS,
+      Buffer,
       enc,
       buf2Words,
       words2buf,

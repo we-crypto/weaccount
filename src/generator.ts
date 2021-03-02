@@ -18,6 +18,7 @@ export function generate(auth: string, useSigned?: boolean): PWalletType {
   const plainbuf = keypair.secretKey;
 
   const encrypted = keyEncrypt(plainbuf, aeskey);
+
   const ivhex = encrypted.iv.toString();
   const cipherhex = encrypted.ciphertext.toString();
 
@@ -58,7 +59,7 @@ export const walletFormatter = {
       );
     }
 
-    if (parseObj.version !== DEF_ACC_CONFIG.version) {
+    if (parseObj.version.toString() !== DEF_ACC_CONFIG.version) {
       throw new Error(
         `keystore version illegal. version must ${DEF_ACC_CONFIG.version}`,
       );

@@ -39,6 +39,8 @@
       tools && (window.tools = tools);
 
       tools && tools.enc && (window.Enc = tools.enc);
+      tools && tools.CryptoJS && (window.CryptoJS = tools.CryptoJS);
+      tools && tools.Buffer && (window.Buffer = tools.Buffer);
       // Account.cryptoJS && (window.cryptoJS = Account.cryptoJS);
     }
   }
@@ -153,49 +155,67 @@
    * keyEncrypt & keyDecrypt
    */
   function bindGenEnDeAll() {
+    /**
+     * {
+        "version": 1,
+        "did": "didBU7LnkT6u1QiFcHYvGY1LEWk85arjapBYBDkLz4nKBSm",
+        "cipher_txt": "gAkz8aoGKt7CY6586u8d3TMqaEPQyYTTaTHXnmahvN5K1R8cPuP8q5DSEGMQ4aSaBFiPa8hYtAb4fHqwC1jQmm7BSrzEWUW641vEgYhA99iZ2"
+      }
+     **/
     document.querySelector('#genEnDeAll').addEventListener('click', () => {
       const $pwd = document.querySelector('input[name="password"]');
       if ($pwd && $pwd.value && $pwd.value.toString().trim().length >= 3) {
-        const tools = Weaccount.tools,
-          helper = Weaccount.helper;
+        try {
+          const tools = Weaccount.tools,
+            helper = Weaccount.helper;
 
-        const aeshex =
-            '3dfcfca6c22880b1369015b4667a7843be7549ccb9206a56edaacb8fba15c67a',
-          prihex =
-            'cf732e3c93717f845fd9002e41e03b9507a071ed7a6156f7bf778bd1c70b5b0e080ba558284f469b2c774151b3f552fc5bf22b178f827b4767e8c25f80d90466',
-          pubhex =
-            '080ba558284f469b2c774151b3f552fc5bf22b178f827b4767e8c25f80d90466';
+          const aeshex =
+              '92fdd8030533b6fdd37cc7fc6559d062728d4d2f3740b3439aa792968dee0c1b',
+            prihex =
+              '234df8d00d6f77aec596bfa76f6d7b7027639a8c1b017cf826ce8837f8ae8ce09b86b89aae0f622efbe13f35fb23270a68f8856b397f658ff98a07555de79b7e',
+            pubhex =
+              '9b86b89aae0f622efbe13f35fb23270a68f8856b397f658ff98a07555de79b7e';
 
-        fillContent('#endeSection .aeskey-arr', tools.hex2buf(aeshex));
-        fillContent('#endeSection .aeskey-hex', aeshex);
+          fillContent('#endeSection .aeskey-arr', tools.hex2buf(aeshex));
+          fillContent('#endeSection .aeskey-hex', aeshex);
 
-        fillContent('#endeSection .pubkey-arr', tools.hex2buf(pubhex));
-        fillContent('#endeSection .pubkey-hex', pubhex);
+          fillContent('#endeSection .pubkey-arr', tools.hex2buf(pubhex));
+          fillContent('#endeSection .pubkey-hex', pubhex);
 
-        fillContent('#endeSection .prikey-arr', tools.hex2buf(prihex));
-        fillContent('#endeSection .prikey-hex', prihex);
-        fillContent('#endeSection p.before-plaintxt-hex', prihex);
+          fillContent('#endeSection .prikey-arr', tools.hex2buf(prihex));
+          fillContent('#endeSection .prikey-hex', prihex);
+          fillContent('#endeSection p.before-plaintxt-hex', prihex);
 
-        const aeskey = tools.hex2buf(aeshex);
-        const plaintxtbuf = tools.hex2buf(prihex);
+          const aeskey = tools.hex2buf(aeshex);
+          const plaintxtbuf = tools.hex2buf(prihex);
 
-        // encrypt
-        const encrypted = helper.keyEncrypt(plaintxtbuf, aeskey);
-        const ciphertextHex = encrypted.ciphertext.toString();
-        const ivhex = encrypted.iv.toString();
-        const sumCipherbuf = helper.comboxHexBuf(ivhex, ciphertextHex);
-        const sumCipherhex = tools.buf2hex(sumCipherbuf);
+          // encrypt
+          const encrypted = helper.keyEncrypt(plaintxtbuf, aeskey);
+          console.log('>encrypted>>>>>>>>>>>>>>', encrypted);
+          const ciphertextHex = encrypted.ciphertext.toString();
+          const ivhex = encrypted.iv.toString();
+          const deAeskeyHex = encrypted.key.toString();
+          const sumCipherbuf = helper.comboxHexBuf(ivhex, ciphertextHex);
+          const sumCipherhex = tools.buf2hex(sumCipherbuf);
 
-        fillContent('#endeSection p.ivhex-text', ivhex);
-        fillContent('#endeSection p.encrpted-hex', ciphertextHex);
-        fillContent('#endeSection p.encrypted-text', encrypted.toString());
-        fillContent('#endeSection p.combox-hex', sumCipherhex);
+          fillContent('#endeSection p.aeskeyhex-text', deAeskeyHex);
+          fillContent('#endeSection p.ivhex-text', ivhex);
+          fillContent('#endeSection p.encrpted-hex', ciphertextHex);
+          fillContent('#endeSection p.encrypted-text', encrypted.toString());
+          fillContent('#endeSection p.combox-hex', sumCipherhex);
 
-        // decrypt
-        const decrypted = helper.keyDecrypt(sumCipherbuf, aeskey);
+          // decrypt
+          const decrypted = helper.keyDecrypt(sumCipherbuf, aeskey);
 
-        console.log(decrypted.toString());
-        fillContent('#endeSection p.decrypted-hex', decrypted.toString());
+          console.log(decrypted.toString());
+          fillContent('#endeSection p.decrypted-hex', decrypted.toString());
+          fillContent(
+            '#endeSection p.prikey-decrypted-len',
+            decrypted.toString().length,
+          );
+        } catch (e) {
+          console.error(e);
+        }
       } else {
         showError('password must more than 3 letters.', 6000);
       }
