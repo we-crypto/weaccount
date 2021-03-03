@@ -16,6 +16,7 @@ import {hex2buf, buf2hex, paddingLeft, validHex} from './util';
 
 import {CIvType, CIvHexType} from './types';
 import {sign} from '@wecrpto/nacl';
+import {bs58Encode, bs58Decode} from './bs58';
 const IV_BYTELEN = 16;
 
 /**
@@ -167,7 +168,7 @@ export function signMessage(message: string, keybuf: Uint8Array): string {
   }
 
   const sigbuf = sign.detached(msgbuf, keybuf);
-  return uint8ArrayToBase64(sigbuf);
+  return bs58Encode(sigbuf);
 }
 
 /**
@@ -184,7 +185,7 @@ export function verifyMessage(
   pubkey: Uint8Array,
 ): boolean {
   const msgbuf = utf8ToUint8Array(message);
-  const signbuf = bs64ToUint8Array(signature);
+  const signbuf = bs58Decode(signature);
 
   if (!pubkey || pubkey.length !== sign.publicKeyLength) {
     throw new Error(

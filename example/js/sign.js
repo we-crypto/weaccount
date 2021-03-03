@@ -93,11 +93,14 @@
       console.log('Coding: ', msgUtf8, privkeyBuf, privkeyBuf.length);
 
       const sig = nacl.sign.detached(msgUtf8, privkeyBuf);
+      const signatureBs58 = helper.signMessage(params.message, privkeyBuf);
 
       const signature = helper.uint8ArrayToBase64(sig);
+
       console.log('sig: ', sig, signature);
       fillContent('p.message-base64-text', msgUtf8);
       fillContent('p.message-signature-text', signature);
+      fillContent('p.message-base58-text', signatureBs58);
 
       // showError(JSON.stringify(params, null, 2), 5000);
     }
@@ -141,7 +144,15 @@
       // nacl.sign.detached.verify(nacl.util.decodeUTF8(this.message()), s, pk)
       let vb = nacl.sign.detached.verify(msgUtf8, sigBuf, keypair.publicKey);
 
-      const verified = vb ? 'passed.' : 'bad verify';
+      const sig58 = document.querySelector('p.message-base58-text').textContent;
+      let verifyRes = helper.verifyMessage(
+        sig58,
+        params.message,
+        keypair.publicKey,
+      );
+
+      console.log('>>>>>>>>>>>>>>>verify58>>>>>', verifyRes);
+      const verified = verifyRes ? 'passed.' : 'bad verify';
       setVerifiedRes(verified, vb);
       // fillContent('p.inner-verify-passed', verified);
     }
