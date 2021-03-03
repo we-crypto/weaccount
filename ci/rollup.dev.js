@@ -5,6 +5,7 @@ import babel from '@rollup/plugin-babel';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import sourceMaps from 'rollup-plugin-sourcemaps';
+import replacer from '@rollup/plugin-replace';
 
 import pkg from '../package.json';
 import svrOpts from './serve-dev';
@@ -29,6 +30,9 @@ export default {
   ],
   external: ['@wecrpto/nacl'],
   plugins: [
+    replacer({
+      __WEACC_VERSION__: () => pkg.version,
+    }),
     resolve(),
     commonjs(),
     typescript({

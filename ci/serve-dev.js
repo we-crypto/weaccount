@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable no-console */
-const chalk = require('chalk')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const chalk = require('chalk');
 const serverPort = 3089;
 
 //https://github.com/thgh/rollup-plugin-serve
@@ -13,6 +14,11 @@ export default {
   onListening: async function (server) {
     const connectionKey = server._connectionKey;
     const protocol = this.https ? 'https' : 'http';
-    console.log(chalk.greenBright(`Server listening at ${protocol}://${this.host}:${this.port}/`),chalk.blueBright(connectionKey));
+    console.log(
+      chalk.greenBright(
+        `Server listening at ${protocol}://${this.host}:${this.port}/`,
+      ),
+      chalk.blueBright(connectionKey),
+    );
   },
 };
