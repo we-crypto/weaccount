@@ -60,13 +60,17 @@ export const walletFormatter = {
       );
     }
 
-    if (parseObj.version !== DEF_ACC_CONFIG.version) {
+    const keystoreVersion =
+      typeof parseObj.version === 'string'
+        ? parseInt(parseObj.version)
+        : parseObj.version;
+    if (keystoreVersion > DEF_ACC_CONFIG.version) {
       throw new Error(
-        `keystore version illegal. version must ${DEF_ACC_CONFIG.version}`,
+        `keystore version illegal. version must ${DEF_ACC_CONFIG.version} or less`,
       );
     }
     const wallet: PWalletType = {
-      version: parseObj.version,
+      version: keystoreVersion,
       did: parseObj.did,
       cipher_txt: parseObj.cipher_txt,
       key: undefined,
@@ -198,7 +202,10 @@ export function importFromKeystore(
     );
   }
   const wallet: PWalletType = {
-    version: keystoreObj.version,
+    version:
+      typeof keystoreObj.version === 'string'
+        ? parseInt(keystoreObj.version)
+        : keystoreObj.version,
     cipher_txt: keystoreObj.cipher_txt,
     did: keystoreObj.did,
     key: undefined,

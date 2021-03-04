@@ -19,7 +19,7 @@ export type KeystoreType = {
 };
 
 export type SafeWallet = {
-  version: string | number;
+  version: number;
   did: string; //base58
   cipher_txt: string;
 };
@@ -31,7 +31,7 @@ export type KeypairType = {
 };
 
 export type PWalletType = {
-  version: string | number;
+  version: number;
   did: string; //base58
   cipher_txt: string;
   key?: KeypairType | undefined;

@@ -15,7 +15,7 @@ import {DEF_ACC_CONFIG} from './consts';
 
 import {enc} from 'crypto-js';
 import {Buffer} from 'buffer/';
-import * as CryptoJS from 'crypto-js';
+// import * as CryptoJS from 'crypto-js';
 
 import {
   validHex,
