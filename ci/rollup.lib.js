@@ -40,6 +40,7 @@ export default {
   external: ['@wecrpto/nacl'],
   plugins: [
     replacer({
+      preventAssignment: true,
       __WEACC_VERSION__: () => pkg.version,
     }),
     resolve(),

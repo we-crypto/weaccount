@@ -165,13 +165,10 @@ export default (function (): WeaccountType {
 
     /**
      *
-     * @param aeshex
+     * @param aeskey
+     * @returns wallet;
      */
-
-    // eslint-disable-next-line require-jsdoc
-    openByAeskey(aeshex: string): PWalletType {
-      const aeskey = hex2buf(aeshex);
-
+    openByAeskey(aeskey: Uint8Array): PWalletType {
       if (this.wallet !== undefined) {
         const wallet: PWalletType = openWalletByAeskey(this.wallet, aeskey);
         if (wallet.key) {
@@ -179,7 +176,7 @@ export default (function (): WeaccountType {
         }
         return wallet;
       } else {
-        throw UnfoundWalletError();
+        throw OpenWalletError('OPEN_FAIL_AESKEY', 'open wallet fail.');
       }
     }
 
@@ -323,6 +320,19 @@ export default (function (): WeaccountType {
    */
   function UnfoundWalletError(): Error {
     return new Error('Not found wallet,you can use generate create.');
+  }
+
+  /**
+   *
+   * @param errCode
+   * @param message
+   * @return {Object}
+   */
+  function OpenWalletError(errCode: string, message: string): any {
+    return {
+      errCode: errCode || 'OPEN_FAIL',
+      message: message || 'open wallet fail',
+    };
   }
 
   /**
