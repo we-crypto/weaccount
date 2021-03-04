@@ -1,6 +1,6 @@
 export const DEF_ACC_CONFIG = {
   idPrefix: 'did',
-  version: '1',
+  version: 1,
 };
 
 export const KP = {

@@ -60,7 +60,7 @@ export const walletFormatter = {
       );
     }
 
-    if (parseObj.version.toString() !== DEF_ACC_CONFIG.version) {
+    if (parseObj.version !== DEF_ACC_CONFIG.version) {
       throw new Error(
         `keystore version illegal. version must ${DEF_ACC_CONFIG.version}`,
       );

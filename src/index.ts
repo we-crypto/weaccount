@@ -326,7 +326,7 @@ export default (function (): WeaccountType {
    *
    * @param errCode
    * @param message
-   * @return {Object}
+   * @returns {Object}
    */
   function OpenWalletError(errCode: string, message: string): any {
     return {
