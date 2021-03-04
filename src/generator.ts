@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import {sign} from '@wecrpto/nacl';
 import {KeypairType, PWalletType} from './types';
 import {DEF_ACC_CONFIG} from './consts';
 import {AESKeySync, generateKeypair, id2pub, pub2id} from './key-helper';
@@ -95,7 +96,14 @@ export function openWallet(wallet: PWalletType, auth: string): PWalletType {
   const decrypted = keyDecrypt(cipherSumBuf, aeskey);
 
   const plainhex = decrypted.toString();
+
   if (!plainhex || !plainhex.length) {
+    throw new Error(
+      `open wallet fail. make sure your password incorrect. password [ ${auth} ]`,
+    );
+  }
+
+  if (!verifyPrikey(hex2buf(plainhex), pubkey)) {
     throw new Error(
       `open wallet fail. make sure your password incorrect. password [ ${auth} ]`,
     );
@@ -134,6 +142,9 @@ export function openWalletByAeskey(
   const cipherSumBuf = bs58Decode(cipherBs58);
   const decrypted = keyDecrypt(cipherSumBuf, aeskey);
   validHexForDecrypted(decrypted.toString());
+  if (!verifyPrikey(hex2buf(decrypted.toString()), pubkey)) {
+    throw new Error('open wallet fail. Please make sure your lockedkey.');
+  }
   const keypair: KeypairType = {
     publicKey: pubkey,
     secretKey: hex2buf(decrypted.toString()),
@@ -181,7 +192,11 @@ export function importFromKeystore(
       `open wallet fail. make sure your password incorrect. password [ ${auth} ]`,
     );
   }
-
+  if (!verifyPrikey(hex2buf(plainhex), pubkey)) {
+    throw new Error(
+      `open wallet fail. make sure your password incorrect. password [ ${auth} ]`,
+    );
+  }
   const wallet: PWalletType = {
     version: keystoreObj.version,
     cipher_txt: keystoreObj.cipher_txt,
@@ -227,4 +242,17 @@ export function walletJsonfy(k: string, v: any | undefined): any {
     return buf2hex(v);
   }
   return v;
+}
+
+/**
+ *
+ * @param {Uint8Array} prikey
+ * @param {Uint8Array} pubkey
+ * @returns boolean
+ */
+export function verifyPrikey(prikey: Uint8Array, pubkey: Uint8Array): boolean {
+  const kp = sign.keyPair.fromSecretKey(prikey);
+  const readPubhex = buf2hex(kp.publicKey);
+  const srcPubhex = buf2hex(pubkey);
+  return readPubhex === srcPubhex;
 }

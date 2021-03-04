@@ -68,8 +68,13 @@
 
       const modal = Weaccount.create($pwd.value);
       window.$modal = modal;
+      const keypair = modal.getKeypair();
+      const pubHex = tools.Buffer.from(keypair.publicKey).toString('hex');
+      const priHex = tools.Buffer.from(keypair.secretKey).toString('hex');
 
       fillText('keystoreJson', modal.keyStoreJsonfy());
+      fillContent('#originPubHex', pubHex);
+      fillContent('#originPriHex', priHex);
     }
   }
 

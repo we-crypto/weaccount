@@ -62,6 +62,7 @@ export default (function (): WeaccountType {
    * Modal window
    */
   class Modal {
+    version: string | undefined;
     useSigned: boolean;
     remembered: boolean | undefined;
     idPrefix: string;
@@ -82,6 +83,7 @@ export default (function (): WeaccountType {
       remembered = false,
       useSigned = false,
     }: ConstructorType) {
+      this.version = libVer;
       this.idPrefix = idPrefix;
       this.remembered = remembered;
       this.useSigned = useSigned;
@@ -150,6 +152,16 @@ export default (function (): WeaccountType {
         );
       }
     }
+
+    // verifyAuthor(auth:string):PWalletType{
+    //   if(this.wallet !== undefined){
+    //     // const wallet =
+    //   }else {
+    //     throw new Error(
+    //       'Please create a wallet first, uesed Weaccount.create or generate.',
+    //     );
+    //   }
+    // }
 
     /**
      *
@@ -388,7 +400,7 @@ export default (function (): WeaccountType {
       uint8ArrayToBase64,
     },
     tools: {
-      CryptoJS,
+      // CryptoJS,
       Buffer,
       enc,
       buf2Words,

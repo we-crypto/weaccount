@@ -96,3 +96,5 @@ export function id2pub(bs58Id: string, prefix?: string): Uint8Array {
 
   return bs58Decode(id);
 }
+
+
