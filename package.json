@@ -41,7 +41,7 @@
   "bugs": {
     "url": "https://github.com/we-crypto/weaccount/issues"
   },
-  "homepage": "https://github.com/we-crypto/weaccount#readme",
+  "homepage": "https://we-crypto.github.io/weaccount",
   "dependencies": {
     "@wecrpto/nacl": "^0.1.0",
     "@wecrpto/nacl-util": "^0.1.1",
