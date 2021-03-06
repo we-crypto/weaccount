@@ -17,7 +17,8 @@
     "build:clean": "rimraf ./dist",
     "build:lib": "rollup --config ci/rollup.lib.js --noConflict",
     "build:dev": "rollup --config ci/rollup.dev.js -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs":"docsify serve ./docs"
   },
   "repository": {
     "type": "git",
@@ -63,6 +64,7 @@
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
     "chalk": "^4.1.0",
+    "docsify": "^4.12.0",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-jsdoc": "^32.0.2",

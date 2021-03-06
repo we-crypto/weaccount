@@ -1463,6 +1463,15 @@ cli-truncate@^2.1.0:
     slice-ansi "^3.0.0"
     string-width "^4.2.0"
 
+clipboard@^2.0.0:
+  version "2.0.6"
+  resolved "https://registry.npm.taobao.org/clipboard/download/clipboard-2.0.6.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fclipboard%2Fdownload%2Fclipboard-2.0.6.tgz#52921296eec0fdf77ead1749421b21c968647376"
+  integrity sha1-UpISlu7A/fd+rRdJQhshyWhkc3Y=
+  dependencies:
+    good-listener "^1.2.2"
+    select "^1.1.2"
+    tiny-emitter "^2.0.0"
+
 cliui@^6.0.0:
   version "6.0.0"
   resolved "https://registry.npm.taobao.org/cliui/download/cliui-6.0.0.tgz#511d702c0c4e41ca156d7d0e96021f23e13225b1"
@@ -1661,6 +1670,11 @@ define-properties@^1.1.3:
   dependencies:
     object-keys "^1.0.12"
 
+delegate@^3.1.2:
+  version "3.2.0"
+  resolved "https://registry.npm.taobao.org/delegate/download/delegate-3.2.0.tgz#b66b71c3158522e8ab5744f720d8ca0c2af59166"
+  integrity sha1-tmtxwxWFIuirV0T3INjKDCr1kWY=
+
 dir-glob@^3.0.1:
   version "3.0.1"
   resolved "https://registry.npm.taobao.org/dir-glob/download/dir-glob-3.0.1.tgz#56dbf73d992a4a93ba1584f4534063fd2e41717f"
@@ -1668,12 +1682,31 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
+docsify@^4.12.0:
+  version "4.12.0"
+  resolved "https://registry.npm.taobao.org/docsify/download/docsify-4.12.0.tgz#ac08a5b4a17bd80413b22e5201e35678cdd7e57f"
+  integrity sha1-rAiltKF72AQTsi5SAeNWeM3X5X8=
+  dependencies:
+    dompurify "^2.2.6"
+    marked "^1.2.9"
+    medium-zoom "^1.0.6"
+    opencollective-postinstall "^2.0.2"
+    prismjs "^1.23.0"
+    strip-indent "^3.0.0"
+    tinydate "^1.3.0"
+    tweezer.js "^1.4.0"
+
 doctrine@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npm.taobao.org/doctrine/download/doctrine-3.0.0.tgz#addebead72a6574db783639dc87a121773973961"
   integrity sha1-rd6+rXKmV023g2OdyHoSF3OXOWE=
   dependencies:
     esutils "^2.0.2"
+
+dompurify@^2.2.6:
+  version "2.2.6"
+  resolved "https://registry.npm.taobao.org/dompurify/download/dompurify-2.2.6.tgz#54945dc5c0b45ce5ae228705777e8e59d7b2edc4"
+  integrity sha1-VJRdxcC0XOWuIocFd36OWdey7cQ=
 
 dot-prop@^5.1.0:
   version "5.3.0"
@@ -2118,6 +2151,13 @@ globby@^11.0.1:
     merge2 "^1.3.0"
     slash "^3.0.0"
 
+good-listener@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.npm.taobao.org/good-listener/download/good-listener-1.2.2.tgz#d53b30cdf9313dffb7dc9a0d477096aa6d145c50"
+  integrity sha1-1TswzfkxPf+33JoNR3CWqm0UXFA=
+  dependencies:
+    delegate "^3.1.2"
+
 graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   version "4.2.6"
   resolved "https://registry.npm.taobao.org/graceful-fs/download/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
@@ -2539,6 +2579,16 @@ map-obj@^4.0.0:
   resolved "https://registry.npm.taobao.org/map-obj/download/map-obj-4.1.0.tgz#b91221b542734b9f14256c0132c897c5d7256fd5"
   integrity sha1-uRIhtUJzS58UJWwBMsiXxdclb9U=
 
+marked@^1.2.9:
+  version "1.2.9"
+  resolved "https://registry.npm.taobao.org/marked/download/marked-1.2.9.tgz?cache=0&sync_timestamp=1614405578238&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmarked%2Fdownload%2Fmarked-1.2.9.tgz#53786f8b05d4c01a2a5a76b7d1ec9943d29d72dc"
+  integrity sha1-U3hviwXUwBoqWna30eyZQ9Kdctw=
+
+medium-zoom@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.npm.taobao.org/medium-zoom/download/medium-zoom-1.0.6.tgz#9247f21ca9313d8bbe9420aca153a410df08d027"
+  integrity sha1-kkfyHKkxPYu+lCCsoVOkEN8I0Cc=
+
 meow@^8.0.0:
   version "8.1.2"
   resolved "https://registry.npm.taobao.org/meow/download/meow-8.1.2.tgz?cache=0&sync_timestamp=1610076688294&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmeow%2Fdownload%2Fmeow-8.1.2.tgz#bcbe45bda0ee1729d350c03cffc8395a36c4e897"
@@ -2686,6 +2736,11 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
+opencollective-postinstall@^2.0.2:
+  version "2.0.3"
+  resolved "https://registry.npm.taobao.org/opencollective-postinstall/download/opencollective-postinstall-2.0.3.tgz#7a0fff978f6dbfa4d006238fbac98ed4198c3259"
+  integrity sha1-eg//l49tv6TQBiOPusmO1BmMMlk=
+
 opener@1:
   version "1.5.2"
   resolved "https://registry.npm.taobao.org/opener/download/opener-1.5.2.tgz?cache=0&sync_timestamp=1598733439329&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fopener%2Fdownload%2Fopener-1.5.2.tgz#5d37e1f35077b9dcac4301372271afdeb2a13598"
@@ -2825,6 +2880,13 @@ prettier@^2.2.1:
   version "2.2.1"
   resolved "https://registry.npm.taobao.org/prettier/download/prettier-2.2.1.tgz#795a1a78dd52f073da0cd42b21f9c91381923ff5"
   integrity sha1-eVoaeN1S8HPaDNQrIfnJE4GSP/U=
+
+prismjs@^1.23.0:
+  version "1.23.0"
+  resolved "https://registry.npm.taobao.org/prismjs/download/prismjs-1.23.0.tgz#d3b3967f7d72440690497652a9d40ff046067f33"
+  integrity sha1-07OWf31yRAaQSXZSqdQP8EYGfzM=
+  optionalDependencies:
+    clipboard "^2.0.0"
 
 progress@^2.0.0:
   version "2.0.3"
@@ -3107,6 +3169,11 @@ scrypt-js@^3.0.1:
   resolved "https://registry.npm.taobao.org/scrypt-js/download/scrypt-js-3.0.1.tgz#d314a57c2aef69d1ad98a138a21fe9eafa9ee312"
   integrity sha1-0xSlfCrvadGtmKE4oh/p6vqe4xI=
 
+select@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.npm.taobao.org/select/download/select-1.1.2.tgz#0e7350acdec80b1108528786ec1d4418d11b396d"
+  integrity sha1-DnNQrN7ICxEIUoeG7B1EGNEbOW0=
+
 semver-compare@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npm.taobao.org/semver-compare/download/semver-compare-1.0.0.tgz#0dee216a1c941ab37e9efb1788f6afc5ff5537fc"
@@ -3374,6 +3441,16 @@ through2@^4.0.0:
   resolved "https://registry.npm.taobao.org/through/download/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
 
+tiny-emitter@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.npm.taobao.org/tiny-emitter/download/tiny-emitter-2.1.0.tgz#1d1a56edfc51c43e863cbb5382a72330e3555423"
+  integrity sha1-HRpW7fxRxD6GPLtTgqcjMONVVCM=
+
+tinydate@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.npm.taobao.org/tinydate/download/tinydate-1.3.0.tgz#e6ca8e5a22b51bb4ea1c3a2a4fd1352dbd4c57fb"
+  integrity sha1-5sqOWiK1G7TqHDoqT9E1Lb1MV/s=
+
 to-fast-properties@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npm.taobao.org/to-fast-properties/download/to-fast-properties-2.0.0.tgz?cache=0&sync_timestamp=1580550296062&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fto-fast-properties%2Fdownload%2Fto-fast-properties-2.0.0.tgz#dc5e698cbd079265bc73e0377681a4e4e83f616e"
@@ -3412,6 +3489,11 @@ tsutils@^3.17.1:
   integrity sha1-6gPqRUYuFGtT1wzgiT3kU/8k9pg=
   dependencies:
     tslib "^1.8.1"
+
+tweezer.js@^1.4.0:
+  version "1.5.0"
+  resolved "https://registry.npm.taobao.org/tweezer.js/download/tweezer.js-1.5.0.tgz#ca50ac5215022203fd3be4d28617e8e2305f5c0c"
+  integrity sha1-ylCsUhUCIgP9O+TShhfo4jBfXAw=
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
