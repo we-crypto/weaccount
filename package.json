@@ -1,6 +1,6 @@
 {
   "name": "@wecrpto/weaccount",
-  "version": "0.2.5",
+  "version": "1.0.0",
   "description": "a crypto lib for miniprogram",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",
@@ -18,7 +18,7 @@
     "build:lib": "rollup --config ci/rollup.lib.js --noConflict",
     "build:dev": "rollup --config ci/rollup.dev.js -w",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs":"docsify serve ./docs"
+    "docs": "docsify serve ./docs"
   },
   "repository": {
     "type": "git",

@@ -2,8 +2,22 @@ import {LibWordArray, WordArray} from 'crypto-js';
 
 export type ConfigType = {
   idPrefix?: string; // Invalid configuration,future extend
-  remembered?: boolean;
+  weaked?: boolean;
   useSigned?: boolean;
+  round?: number;
+};
+
+export type OpenParamType = {
+  idPrefix?: string;
+  useSigned: boolean;
+  round: number;
+};
+
+export type ImpOptionType = {
+  idPrefix?: string; // Invalid configuration,future extend
+  weaked?: boolean;
+  useSigned?: boolean;
+  round?: number;
 };
 
 export type WalletKeyType = {
@@ -72,24 +86,22 @@ export type ModalType = {
   // sign: (signData: SignDataType, auth?: string) => SignDataType;
 };
 
-export type ConstructorType = {
-  idPrefix?: string;
-  remembered?: boolean;
-  useSigned?: boolean;
-};
-
 export type UtilsType = {
   decodeUTF8: (s: string) => Uint8Array;
   buf2hex: (buf: Uint8Array, hexPrefix?: boolean) => string;
 };
 
 export type HelperType = {
-  generateKeypair: (auth: string) => KeypairType;
-  generateWallet: (auth: string, useSigned?: boolean) => PWalletType;
-  AESKeySync: (pub: Uint8Array, password: string) => Uint8Array;
+  generateKeypair: (auth: string, keyparams: OpenParamType) => KeypairType;
+  generateWallet: (auth: string, keyparams: OpenParamType) => PWalletType;
+  AESKeySync: (pub: Uint8Array, password: string, round: number) => Uint8Array;
   keyEncrypt: (plainbuf: Uint8Array, aeskey: Uint8Array) => WordArray;
   keyDecrypt: (cipherbuf: Uint8Array, aeskey: Uint8Array) => any;
-  openWalletByAeskey: (wallet: PWalletType, aeskey: Uint8Array) => PWalletType;
+  openWalletByAeskey: (
+    wallet: PWalletType,
+    aeskey: Uint8Array,
+    keyparams: OpenParamType,
+  ) => PWalletType;
   signMessage: (message: string, keybuf: Uint8Array) => string;
   verifyMessage: (
     signature: string,
@@ -110,7 +122,6 @@ export type HelperType = {
 export type WeaccountType = {
   version: string;
   init: (config?: ConfigType) => void;
-  create: (auth: string, config?: ConfigType) => any;
   importKeyStore: (keystore: string, auth: string, config?: ConfigType) => any;
   Encrypt: (aeskey: Uint8Array, plainWords: LibWordArray) => WordArray;
   helper: HelperType;

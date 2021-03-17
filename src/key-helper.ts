@@ -4,23 +4,31 @@ import {scrypt, ProgressCallback, syncScrypt} from 'scrypt-js';
 import * as nacl from '@wecrpto/nacl';
 
 import {KP} from './consts';
-import {KeypairType} from './types';
+import {KeypairType, OpenParamType} from './types';
 import {bs58Decode, bs58Encode} from './bs58';
 
 /**
  *
  * @param pub [Uint8Array]
  * @param password [string]
+ * @param round
  * @returns key Uint8Array
  */
-export const AESKeySync = (pub: Uint8Array, password: string): Uint8Array => {
+export const AESKeySync = (
+  pub: Uint8Array,
+  password: string,
+  round: number,
+): Uint8Array => {
   if (!pub || pub.length < 8) throw new Error('salt required more than 8');
   if (!password) throw new Error('password is required.');
   const pwdBuf = Buffer.from(password);
+
+  round = validRound(round);
+
   const key = syncScrypt(
     pwdBuf,
     pub.slice(0, KP.S),
-    KP.N,
+    1 << round,
     KP.R,
     KP.P,
     KP.DKLen,
@@ -57,15 +65,15 @@ export const AESKey = async (
 };
 
 export const generateKeypair = (
-  auth?: string,
-  useSigned?: boolean,
+  auth: string,
+  {useSigned = true, round = KP.round}: OpenParamType,
 ): KeypairType => {
-  if (!auth) auth = '';
+  if (!auth) throw new Error('auth is required.');
   const kp = useSigned ? nacl.sign.keyPair() : nacl.sign.keyPair();
   return {
     publicKey: kp.publicKey,
     secretKey: kp.secretKey,
-    lockedKey: AESKeySync(kp.publicKey, auth),
+    lockedKey: AESKeySync(kp.publicKey, auth, round),
   };
 };
 
@@ -95,4 +103,18 @@ export function id2pub(bs58Id: string, prefix?: string): Uint8Array {
   }
 
   return bs58Decode(id);
+}
+
+/**
+ * round only in 6~15,else 15
+ *
+ * @param round
+ * @returns round
+ */
+export function validRound(round: number): number {
+  if (round <= 6 || round > 15) {
+    return KP.round;
+  } else {
+    return round;
+  }
 }

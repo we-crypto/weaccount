@@ -9,21 +9,31 @@
     });
   }
 
+  const config = {
+    idPrefix: 'did',
+    weaked: false,
+    useSigned: true,
+  };
+
+  const KP = {
+    round: 7,
+  };
+
   /**
    *
    */
   function initDomLoaded() {
-    const opts = {
-      idPrefix: 'Did',
-      remembered: true,
-      useSigned: true,
-    };
-    window.Weaccount.init(opts);
-    initLib();
-    bindGenerator();
-    bindOpenWallet();
-    bindImportOpen();
-    bindGenEnDeAll();
+    try {
+      window.$modal = window.Weaccount.init(config);
+      initLib();
+      bindGenerator();
+      bindOpenWallet();
+      bindModalResetor();
+      bindImportOpen();
+      bindGenEnDeAll();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   /**
@@ -66,11 +76,30 @@
         throw new Error('password must more than 3 letters.');
       }
 
-      const modal = Weaccount.create($pwd.value);
+      if (!window.$modal) {
+        throw new Error('no wallet,please create first. click Create button');
+      }
+
+      const auth = $pwd.value;
+      const roundChecked = getChecked('#weakedCheckbox');
+
+      const modal = window.$modal;
+
+      if (roundChecked) {
+        const cfg = Object.assign({}, config, {weaked: true, round: KP.round});
+        modal.setConfig(cfg);
+      }
+      setChecked('#weakedCheckbox', roundChecked);
+
+      modal.generate(auth);
       window.$modal = modal;
       const keypair = modal.getKeypair();
       const pubHex = tools.Buffer.from(keypair.publicKey).toString('hex');
       const priHex = tools.Buffer.from(keypair.secretKey).toString('hex');
+
+      setValue('#parseRoundN', modal.getSafeKeyparams().round);
+
+      setValue('#password1', auth);
 
       fillText('keystoreJson', modal.keyStoreJsonfy());
       fillContent('#originPubHex', pubHex);
@@ -119,12 +148,44 @@
     }
   }
 
+  /**
+   *
+   */
+  function bindModalResetor() {
+    document.querySelector('#resetBtn').addEventListener('click', () => {
+      try {
+        clickHandler();
+      } catch (e) {
+        console.error(e);
+        showError(e.message, 8000);
+      }
+    });
+
+    /**
+     *
+     */
+    function clickHandler() {
+      window.$modal && window.$modal.reset();
+
+      fillText('keystoreJson', '');
+      fillContent('#originPubHex', '');
+      fillContent('#originPriHex', '');
+
+      fillContent('#openKeystoreJson', '');
+
+      setChecked('#weakedCheckbox', false);
+      setChecked('#roundEnabled', false);
+      setValue('#parseRoundN', '');
+    }
+  }
+
   /** ========================== Import Test: keyEncrypt & keyDecrypt ========================== */
   function bindImportOpen() {
     document.querySelector('#importOpenBtn').addEventListener('click', () => {
       try {
         clickHandler();
       } catch (e) {
+        fillContent('#importSection p.importOpenKeyJson', e.message);
         showError(e.message, 8000);
       }
     });
@@ -138,9 +199,19 @@
       ).value;
       const pwd = document.querySelector('#password1').value;
 
-      const modal = Weaccount.importKeyStore(jsontext, pwd, {
-        remembered: false,
-      });
+      const parseEnabled = getChecked('#roundEnabled');
+      const roundN = getValue('#parseRoundN');
+
+      const cfg = {
+        idPrefix: 'did',
+        weaked: parseEnabled,
+        useSigned: true,
+        round: roundN || 20,
+      };
+
+      const modal = parseEnabled
+        ? Weaccount.importKeyStore(jsontext, pwd, cfg)
+        : Weaccount.importKeyStore(jsontext, pwd);
 
       const jsonStr = JSON.stringify(
         modal.wallet,
@@ -152,7 +223,7 @@
 
       fillContent('#importSection p.importOpenKeyJson', jsonStr);
 
-      console.log('jsontext>>>>', jsontext, pwd);
+      console.log('jsontext>>>>', jsontext, pwd, cfg);
     }
   }
 
@@ -228,6 +299,21 @@
   }
 
   /**
+   *
+   * @returns boolean
+   */
+  function getRoundChecked() {
+    return document.querySelector('#weakedCheckbox').checked;
+  }
+
+  /**
+   *
+   */
+  function setRoundChecked() {
+    document.querySelector('#weakedCheckbox').checked = false;
+  }
+
+  /**
    * @param id
    * @param content
    */
@@ -247,6 +333,38 @@
     if ($el) {
       $el.textContent = content;
     }
+  }
+
+  /**
+   * @param selector
+   */
+  function getChecked(selector) {
+    return document.querySelector(selector).checked;
+  }
+
+  /**
+   *
+   * @param {*} selector
+   * @param {*} checked
+   * @returns
+   */
+  function setChecked(selector, checked) {
+    document.querySelector(selector).checked = Boolean(checked);
+  }
+
+  /**
+   * @param selector
+   */
+  function getValue(selector) {
+    return document.querySelector(selector).value;
+  }
+
+  /**
+   * @param selector
+   * @param val
+   */
+  function setValue(selector, val) {
+    document.querySelector(selector).value = val || '';
   }
 
   /**

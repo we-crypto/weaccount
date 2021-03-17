@@ -39,9 +39,11 @@
         <div class="v-form-item">
           <div class="v-form-label"><label for="password">Please Password</label></div>
           <div class="v-form-control"><input type="text" id="password" name="password" value="abc3&$_"></div>
+          <div class="v-form-control"><input type="checkbox" id="weakedCheckbox" name="weakedCheckbox"><span>Round 7</span></div>
           <div class="v-form-btns">
             <button class="v-btn primary" id="createBtn">Create</button>
             <button class="v-btn primary" id="openWalletBtn">Open</button>
+            <button class="v-btn primary" id="resetBtn">Reset</button>
           </div>
         </div>
         <div class="v-form-item">
@@ -77,9 +79,22 @@
               <textarea name="keystoreJson" id="keystoreJson" rows="10" placeholder="keystore json"></textarea>
             </div>
             <div class="v-col">
+              <div style="padding-bottom: 12px;;">
+                <label for="roundEnabled">Enabled Round</label>
+                <input type="checkbox" id="roundEnabled" name="roundEnabled">
+              </div>
+              <div>
+                <label for="parseRoundN">Round</label>
+                <input type="text" id="parseRoundN" name="parseRoundN" value="" placeholder="entry Round">
+              </div>
+
+            </div>
+            <div class="v-col">
               <label for="password1">Password</label>
               <input type="text" id="password1" name="password1" value="" placeholder="entry password">
             </div>
+
+
           </div>
           <div class="v-form-btns import-btns">
             <button class="v-btn primary" id="importOpenBtn">Import & Open</button>

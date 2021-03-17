@@ -4,6 +4,8 @@ export const DEF_ACC_CONFIG = {
 };
 
 export const KP = {
+  round: 15,
+  weakRound: 8,
   S: 8,
   N: 1 << 15, //32768
   R: 8,

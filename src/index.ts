@@ -1,17 +1,23 @@
 /* eslint-disable no-console */
 import {
   PWalletType,
-  ConstructorType,
   KeystoreType,
   ConfigType,
   WeaccountType,
   KeypairType,
   SafeWallet,
+  OpenParamType,
 } from './types';
 
-import {AESKeySync, generateKeypair, pub2id, id2pub} from './key-helper';
+import {
+  AESKeySync,
+  generateKeypair,
+  pub2id,
+  id2pub,
+  validRound,
+} from './key-helper';
 
-import {DEF_ACC_CONFIG} from './consts';
+import {DEF_ACC_CONFIG, KP} from './consts';
 
 import {enc} from 'crypto-js';
 import {Buffer} from 'buffer/';
@@ -51,6 +57,7 @@ import {
   openWallet,
   openWalletByAeskey,
   importFromKeystore,
+  openSafeWallet,
 } from './generator';
 
 const libVer = '__WEACC_VERSION__';
@@ -63,44 +70,82 @@ export default (function (): WeaccountType {
    */
   class Modal {
     version: string | undefined;
-    useSigned: boolean;
-    remembered: boolean | undefined;
-    idPrefix: string;
+    weaked: boolean;
     lockedkey: Uint8Array | undefined;
     keystore: KeystoreType | undefined;
     wallet: PWalletType | undefined;
     keypair: KeypairType | undefined;
 
+    keyparams: OpenParamType;
+
     /**
      *
      * @param config
      * @param config.idPrefix
-     * @param config.remembered
      * @param config.useSigned
+     * @param config.weaked
+     * @param config.round
      */
     constructor({
-      idPrefix = '',
-      remembered = false,
-      useSigned = false,
-    }: ConstructorType) {
+      idPrefix = DEF_ACC_CONFIG.idPrefix,
+      weaked = false,
+      useSigned = true,
+      round = KP.round,
+    }: ConfigType) {
       this.version = libVer;
-      this.idPrefix = idPrefix;
-      this.remembered = remembered;
-      this.useSigned = useSigned;
+      this.weaked = weaked;
+
+      this.keyparams = {
+        idPrefix: idPrefix,
+        useSigned: useSigned,
+        round: round,
+      };
     }
 
     /**
      *
-     * @param {ConfigType} config
+     * @param config
      */
-    setConfig(config: ConfigType) {
-      const {idPrefix, remembered = true, useSigned = true} = config;
-      if (!this.hasWallet()) {
-        this.idPrefix = idPrefix || DEF_ACC_CONFIG.idPrefix;
-      }
+    setConfig(config: ConfigType): void {
+      if (this.hasWallet())
+        throw new Error(
+          'wallet exist,can not changed config.please reset first.',
+        );
+      const {idPrefix, weaked, useSigned, round} = config;
+      idPrefix && (this.keyparams.idPrefix = idPrefix);
+      typeof weaked === 'boolean' && (this.weaked = weaked);
+      typeof useSigned === 'boolean' && (this.keyparams.useSigned = useSigned);
 
-      this.remembered = remembered;
-      this.useSigned = useSigned;
+      this.weaked &&
+        typeof round === 'number' &&
+        (this.keyparams.round = validRound(round));
+    }
+
+    /**
+     * get instance safe OpenParamType
+     * if weaked false keep round default 15
+     *
+     * @returns OpenParamType
+     */
+    getSafeKeyparams(): OpenParamType {
+      const nkp: OpenParamType = {
+        idPrefix: this.keyparams.idPrefix || '',
+        useSigned: this.keyparams.useSigned,
+        round: this.weaked ? this.keyparams.round : KP.round,
+      };
+      return nkp;
+    }
+
+    /**
+     * change modal use weaked key
+     * used default weaked 7 round(256)
+     */
+    changeWeaked(): void {
+      if (this.hasWallet())
+        throw new Error('wallet exist,can not changed.please reset first.');
+
+      this.weaked = true;
+      this.keyparams.round = KP.weakRound;
     }
 
     /**
@@ -117,8 +162,10 @@ export default (function (): WeaccountType {
         throw new Error(
           'wallet exists.if your need a new,please use reset first',
         );
-      this.wallet = generate(auth, this.useSigned);
-      !!this.remembered && (this.lockedkey = this.wallet.key?.lockedKey);
+      // this.wallet = generate(auth, this.useSigned);
+
+      this.wallet = generate(auth, this.getSafeKeyparams());
+
       this.wallet.key !== undefined && (this.keypair = this.wallet.key);
 
       return this;
@@ -140,7 +187,11 @@ export default (function (): WeaccountType {
      */
     open(auth: string): PWalletType {
       if (this.wallet !== undefined) {
-        const owallet: PWalletType = openWallet(this.wallet, auth);
+        const owallet: PWalletType = openWallet(
+          this.wallet,
+          auth,
+          this.getSafeKeyparams(),
+        );
         this.wallet = owallet;
         if (owallet.key) {
           this.keypair = owallet.key;
@@ -153,16 +204,6 @@ export default (function (): WeaccountType {
       }
     }
 
-    // verifyAuthor(auth:string):PWalletType{
-    //   if(this.wallet !== undefined){
-    //     // const wallet =
-    //   }else {
-    //     throw new Error(
-    //       'Please create a wallet first, uesed Weaccount.create or generate.',
-    //     );
-    //   }
-    // }
-
     /**
      *
      * @param aeskey
@@ -170,7 +211,12 @@ export default (function (): WeaccountType {
      */
     openByAeskey(aeskey: Uint8Array): PWalletType {
       if (this.wallet !== undefined) {
-        const wallet: PWalletType = openWalletByAeskey(this.wallet, aeskey);
+        const nkp = this.getSafeKeyparams();
+        const wallet: PWalletType = openWalletByAeskey(
+          this.wallet,
+          aeskey,
+          nkp,
+        );
         if (wallet.key) {
           this.keypair = wallet.key;
         }
@@ -192,9 +238,13 @@ export default (function (): WeaccountType {
         checkAuth(auth || '');
       }
 
-      if (this.wallet) {
+      if (this.wallet && auth) {
         let aeshex = '';
-        const wallet: PWalletType = openWallet(this.wallet, auth || '');
+        const wallet: PWalletType = openWallet(
+          this.wallet,
+          auth,
+          this.getSafeKeyparams(),
+        );
         const lockedKey = wallet.key?.lockedKey;
         lockedKey && (aeshex = buf2hex(lockedKey));
         return aeshex;
@@ -221,7 +271,7 @@ export default (function (): WeaccountType {
      */
     setWallet(wallet: PWalletType): void {
       this.wallet = wallet;
-      if (this.remembered && wallet.key !== undefined) {
+      if (wallet.key !== undefined) {
         this.keypair = wallet.key;
       } else {
         this.keypair = undefined;
@@ -232,14 +282,25 @@ export default (function (): WeaccountType {
      * load SafeWallet in
      *
      * @param safeWallet load
+     * @param auth
      */
-    loadSafeWallet(safeWallet: SafeWallet): void {
-      if (this.hasWallet()) return;
-      this.wallet = {
+    loadSafeWallet(safeWallet: SafeWallet, auth: string): void {
+      if (this.hasWallet())
+        throw new Error('Wallet has exist,please reset first.');
+      checkAuth(auth);
+
+      const keypair: KeypairType = openSafeWallet(
+        safeWallet,
+        auth,
+        this.getSafeKeyparams(),
+      );
+      const wallet: PWalletType = {
         version: safeWallet.version,
         did: safeWallet.did,
         cipher_txt: safeWallet.cipher_txt,
+        key: keypair,
       };
+      this.wallet = wallet;
     }
 
     /**
@@ -299,18 +360,30 @@ export default (function (): WeaccountType {
     }
 
     /**
+     * import from JSON this do not change instance wallet
      *
      * @param json
      * @param auth
+     * @param config
      * @returns {PWalletType}
      */
-    parseJson(json: string, auth: string): PWalletType {
-      const wallet: PWalletType = importFromKeystore(
-        json,
-        auth,
-        this.remembered,
-      );
-      this.setWallet(wallet);
+    parseJson(json: string, auth: string, config?: ConfigType): PWalletType {
+      const {
+        idPrefix = DEF_ACC_CONFIG.idPrefix,
+        weaked = false,
+        useSigned = true,
+        round = KP.round,
+      } = config || {};
+
+      const nkp: OpenParamType = {
+        idPrefix,
+        useSigned,
+        round: weaked ? round : KP.round,
+      };
+      const wallet: PWalletType = importFromKeystore(json, auth, nkp);
+      if (wallet.key) {
+        this.keypair = wallet.key;
+      }
       return wallet;
     }
   }
@@ -348,17 +421,14 @@ export default (function (): WeaccountType {
   let modal: Modal;
 
   const init = (config?: ConfigType) => {
-    modal = new Modal({...config});
-    return modal;
-  };
-
-  const create = (auth: string, config?: ConfigType): Modal => {
-    if (!modal) {
-      throw new Error('Weaccount do not initialization, please init first.');
-    }
-
-    modal.setConfig(config || {});
-    modal.generate(auth);
+    !config &&
+      (config = {
+        idPrefix: DEF_ACC_CONFIG.idPrefix,
+        weaked: false,
+        useSigned: true,
+        round: KP.round,
+      });
+    modal = new Modal(config);
     return modal;
   };
 
@@ -366,7 +436,7 @@ export default (function (): WeaccountType {
    *
    * @param json
    * @param auth
-   * @param config [idPrefix,remembered,useSigned] optinal
+   * @param config [idPrefix,weaked,useSigned,round] optinal
    * @returns wallet instance
    */
   const importKeyStore = (
@@ -374,10 +444,13 @@ export default (function (): WeaccountType {
     auth: string,
     config?: ConfigType,
   ): Modal => {
-    config && (config.remembered = true) && (config.useSigned = true);
-    const modal = new Modal({...config});
-    const remembered = modal.remembered;
-    const wallet: PWalletType = importFromKeystore(json, auth, remembered);
+    const modal = new Modal(config || {});
+
+    const wallet: PWalletType = importFromKeystore(
+      json,
+      auth,
+      modal.getSafeKeyparams(),
+    );
 
     modal.setWallet(wallet);
 
@@ -388,7 +461,6 @@ export default (function (): WeaccountType {
     version: libVer,
     Encrypt,
     init,
-    create,
     importKeyStore,
     helper: {
       generateKeypair,

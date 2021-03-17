@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import {sign} from '@wecrpto/nacl';
-import {KeypairType, PWalletType} from './types';
+import {sign, box} from '@wecrpto/nacl';
+import {KeypairType, PWalletType, SafeWallet, OpenParamType} from './types';
 import {DEF_ACC_CONFIG} from './consts';
 import {AESKeySync, generateKeypair, id2pub, pub2id} from './key-helper';
 
@@ -10,11 +10,12 @@ import {buf2hex, hex2buf} from './util';
 
 /**
  * @param auth
- * @param useSigned
+ * @param keyparams OpenParamType
+ * @param keyparams.useSigned
  * @returns wallet PWalletType
  */
-export function generate(auth: string, useSigned?: boolean): PWalletType {
-  const keypair: KeypairType = generateKeypair(auth, useSigned);
+export function generate(auth: string, keyparams: OpenParamType): PWalletType {
+  const keypair: KeypairType = generateKeypair(auth, keyparams);
   const aeskey = keypair.lockedKey;
   const plainbuf = keypair.secretKey;
 
@@ -27,7 +28,7 @@ export function generate(auth: string, useSigned?: boolean): PWalletType {
 
   const cipherBs58 = bs58Encode(cipherSumBuffer);
 
-  const id = pub2id(keypair.publicKey, DEF_ACC_CONFIG.idPrefix);
+  const id = pub2id(keypair.publicKey, keyparams.idPrefix || '');
 
   const pwallet: PWalletType = {
     version: DEF_ACC_CONFIG.version,
@@ -84,12 +85,20 @@ export const walletFormatter = {
  *
  * @param wallet
  * @param auth
+ * @param keyparams
  * @returns wallet opened contains key
  */
-export function openWallet(wallet: PWalletType, auth: string): PWalletType {
+export function openWallet(
+  wallet: PWalletType,
+  auth: string,
+  keyparams: OpenParamType,
+): PWalletType {
   const id = wallet.did;
-  const pubkey = id2pub(id, DEF_ACC_CONFIG.idPrefix);
-  const aeskey = AESKeySync(pubkey, auth);
+
+  const {idPrefix, round, useSigned} = keyparams;
+
+  const pubkey = id2pub(id, idPrefix);
+  const aeskey = AESKeySync(pubkey, auth, round);
 
   const cipherBs58 = wallet.cipher_txt;
   if (!cipherBs58 || !cipherBs58.trim().length) {
@@ -107,7 +116,11 @@ export function openWallet(wallet: PWalletType, auth: string): PWalletType {
     );
   }
 
-  if (!verifyPrikey(hex2buf(plainhex), pubkey)) {
+  const secretKey: Uint8Array = hex2buf(plainhex);
+
+  const transPubkey = pri2pub(secretKey, useSigned);
+
+  if (!bufEqual(transPubkey, pubkey)) {
     throw new Error(
       `open wallet fail. make sure your password incorrect. password [ ${auth} ]`,
     );
@@ -115,7 +128,7 @@ export function openWallet(wallet: PWalletType, auth: string): PWalletType {
 
   const keypair: KeypairType = {
     publicKey: pubkey,
-    secretKey: hex2buf(plainhex),
+    secretKey: secretKey,
     lockedKey: aeskey,
   };
 
@@ -129,14 +142,19 @@ export function openWallet(wallet: PWalletType, auth: string): PWalletType {
  *
  * @param wallet
  * @param aeskey
+ * @param keyparams
  * @returns {PWalletType} an wallet contains keypair
  */
 export function openWalletByAeskey(
   wallet: PWalletType,
   aeskey: Uint8Array,
+  keyparams: OpenParamType,
 ): PWalletType {
   const did = wallet.did;
-  const pubkey = id2pub(did, DEF_ACC_CONFIG.idPrefix);
+
+  const {idPrefix, round, useSigned} = keyparams;
+
+  const pubkey = id2pub(did, idPrefix);
   const cipherBs58 = wallet.cipher_txt;
 
   if (!cipherBs58 || !cipherBs58.trim().length) {
@@ -146,12 +164,16 @@ export function openWalletByAeskey(
   const cipherSumBuf = bs58Decode(cipherBs58);
   const decrypted = keyDecrypt(cipherSumBuf, aeskey);
   validHexForDecrypted(decrypted.toString());
-  if (!verifyPrikey(hex2buf(decrypted.toString()), pubkey)) {
+
+  const secretKey: Uint8Array = hex2buf(decrypted.toString());
+
+  const transPubkey: Uint8Array = pri2pub(secretKey, useSigned);
+  if (!bufEqual(transPubkey, pubkey)) {
     throw new Error('open wallet fail. Please make sure your lockedkey.');
   }
   const keypair: KeypairType = {
     publicKey: pubkey,
-    secretKey: hex2buf(decrypted.toString()),
+    secretKey: secretKey,
     lockedKey: aeskey,
   };
 
@@ -161,25 +183,79 @@ export function openWalletByAeskey(
 }
 
 /**
+ *
+ * @param [SafeWallet] wallet
+ * @param wallet
+ * @param auth
+ * @param keyparams
+ * @returns KeypairType
+ */
+export function openSafeWallet(
+  wallet: SafeWallet,
+  auth: string,
+  keyparams: OpenParamType,
+): KeypairType {
+  const did = wallet.did;
+
+  const {idPrefix, round, useSigned} = keyparams;
+
+  const pubkey = id2pub(did, idPrefix);
+  const aeskey = AESKeySync(pubkey, auth, round);
+
+  const cipherBs58 = wallet.cipher_txt;
+  if (!cipherBs58 || !cipherBs58.trim().length) {
+    throw new Error(`cipher_txt non-string. ${cipherBs58}.`);
+  }
+  const cipherSumBuf = bs58Decode(cipherBs58);
+  const decrypted = keyDecrypt(cipherSumBuf, aeskey);
+
+  const plainhex = decrypted.toString();
+
+  if (!plainhex || !plainhex.length) {
+    throw new Error(
+      `open wallet fail. make sure your password incorrect. password [ ${auth} ]`,
+    );
+  }
+
+  const prikey = hex2buf(plainhex);
+
+  const transPubkey = pri2pub(prikey, useSigned);
+  if (!bufEqual(transPubkey, pubkey)) {
+    throw new Error(
+      `open wallet fail. make sure your password incorrect. password [ ${auth} ]`,
+    );
+  }
+
+  const keypair: KeypairType = {
+    publicKey: pubkey,
+    secretKey: prikey,
+    lockedKey: aeskey,
+  };
+
+  return keypair;
+}
+
+/**
  * @param keystore json string
  * @param auth
- * @param remembered boolean default false ,if true wallet will has key
+ * @param keyparams OpenParamType
  * @returns wallet
  */
 export function importFromKeystore(
   keystore: string,
   auth: string,
-  remembered?: boolean,
+  keyparams: OpenParamType,
 ): PWalletType {
-  const containKeypair = Boolean(remembered);
-
   const keystoreObj = walletFormatter.parse(keystore);
   const id: string = keystoreObj.did.toString();
   if (!id.trim().length) {
     throw new Error(`keystore json did illegal. did: [${id}]`);
   }
-  const pubkey = id2pub(id, DEF_ACC_CONFIG.idPrefix);
-  const aeskey = AESKeySync(pubkey, auth);
+
+  const {idPrefix, round, useSigned} = keyparams;
+
+  const pubkey = id2pub(id, idPrefix);
+  const aeskey = AESKeySync(pubkey, auth, round);
 
   const cipherBs58 = keystoreObj.cipher_txt;
   if (!cipherBs58 || !cipherBs58.trim().length) {
@@ -196,7 +272,10 @@ export function importFromKeystore(
       `open wallet fail. make sure your password incorrect. password [ ${auth} ]`,
     );
   }
-  if (!verifyPrikey(hex2buf(plainhex), pubkey)) {
+
+  const prikey = hex2buf(plainhex);
+  const transPubkey: Uint8Array = pri2pub(prikey, useSigned);
+  if (!bufEqual(transPubkey, pubkey)) {
     throw new Error(
       `open wallet fail. make sure your password incorrect. password [ ${auth} ]`,
     );
@@ -211,13 +290,11 @@ export function importFromKeystore(
     key: undefined,
   };
 
-  if (containKeypair) {
-    wallet.key = {
-      publicKey: pubkey,
-      secretKey: hex2buf(plainhex),
-      lockedKey: aeskey,
-    };
-  }
+  wallet.key = {
+    publicKey: pubkey,
+    secretKey: prikey,
+    lockedKey: aeskey,
+  };
 
   return wallet;
 }
@@ -253,13 +330,30 @@ export function walletJsonfy(k: string, v: any | undefined): any {
 
 /**
  *
- * @param {Uint8Array} prikey
- * @param {Uint8Array} pubkey
- * @returns boolean
+ * @param prikey
+ * @param useSigned
+ * @returns Uint8Array
  */
-export function verifyPrikey(prikey: Uint8Array, pubkey: Uint8Array): boolean {
-  const kp = sign.keyPair.fromSecretKey(prikey);
-  const readPubhex = buf2hex(kp.publicKey);
-  const srcPubhex = buf2hex(pubkey);
-  return readPubhex === srcPubhex;
+export function pri2pub(prikey: Uint8Array, useSigned: boolean): Uint8Array {
+  if (useSigned && prikey.length !== 64)
+    throw new Error('PrivateKey must 64 length buf.');
+
+  if (!useSigned && prikey.length !== 32)
+    throw new Error('PrivateKey must 32 length buf.');
+
+  const kp = !useSigned
+    ? box.keyPair.fromSecretKey(prikey)
+    : sign.keyPair.fromSecretKey(prikey);
+
+  return kp.publicKey;
+}
+
+/**
+ *
+ * @param abuf
+ * @param bbuf
+ * @returns equal
+ */
+export function bufEqual(abuf: Uint8Array, bbuf: Uint8Array): boolean {
+  return buf2hex(abuf) === buf2hex(bbuf);
 }
