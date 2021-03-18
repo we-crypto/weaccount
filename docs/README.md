@@ -34,8 +34,24 @@ let nacl = require('@wecrpto/nacl');
 nacl.setPRNG(randomBytes);  //if lib use in wechat miniProgram ,this step required.
 
 import {init,helper,tool} from '@wecrpto/weaccount'; // es6 import first
-let account = init({remembered:true});
-account.create(password);
+
+const config = {
+  idPrefix:'ABC',
+  weaked:false,
+  useSigned:true,
+  round:15
+}
+
+let account = init(config);
+// account.create(password); v1.x remove
+
+account.generate('123');
+
+/**
+ * get safe wallet
+ */
+account.getSafeWallet();
+
 ```
 
 ## API
@@ -44,9 +60,7 @@ account.create(password);
 >
 > init(cfg)
 >
-> create(password,cfg)
->
-> importKeyStore(json,password)
+> importKeyStore(json,password,config)
 
 
 #### Account[modal]
@@ -65,7 +79,7 @@ account.create(password);
 >
 > lock():
 >
-> loadSafeWallet(SafeWallet):
+> loadSafeWallet(SafeWallet,password):
 >
 > getSafeWallet()
 >
@@ -116,3 +130,14 @@ let keypair = modal.getKeypair()
 
 ```
 
+### Import from safeWallet
+
+> import from a safewallet JSON or object
+
+```js
+const safewallet = {...}; // safeWallet
+const modal = init({idPrefix:'ok',weaked:true,round:8});  // weaked & round must same as generate safewallet
+
+modal.loadSafeWallet(safewallet,password);
+
+```
