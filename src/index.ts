@@ -122,6 +122,23 @@ export default (function (): WeaccountType {
     }
 
     /**
+     * idPrefix,weaked,useSigned,round
+     *
+     * @returns ConfigType
+     */
+    getCurrentConfig(): ConfigType {
+      const keyparams = this.getSafeKeyparams();
+      const config: ConfigType = {
+        idPrefix: keyparams.idPrefix,
+        weaked: this.weaked,
+        useSigned: keyparams.useSigned,
+        round: keyparams.round,
+      };
+
+      return config;
+    }
+
+    /**
      * get instance safe OpenParamType
      * if weaked false keep round default 15
      *
@@ -276,6 +293,21 @@ export default (function (): WeaccountType {
       } else {
         this.keypair = undefined;
       }
+    }
+
+    /**
+     *
+     * @param safeWallet
+     * @returns Modal
+     */
+    setSafeWallet(safeWallet: SafeWallet): Modal {
+      if (this.hasWallet()) throw new Error('wallet exist,can not set new.');
+      this.wallet = {
+        version: safeWallet.version,
+        did: safeWallet.did,
+        cipher_txt: safeWallet.cipher_txt,
+      };
+      return this;
     }
 
     /**
